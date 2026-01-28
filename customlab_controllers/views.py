@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Productos
+from .core.models import Productos
 
 @api_view(['GET'])
 def productos_list(request):
