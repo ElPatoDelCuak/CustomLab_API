@@ -23,3 +23,26 @@ class ProductoService:
             'categoria': new_product.categoria,
             'personalizable': new_product.personalizable
         }
+    
+    @staticmethod
+    def updateProducto(idProducto, data):
+        updated_product = ProductoRepository.updateProducto(idProducto, data)
+        if updated_product:
+            return {
+                'id_producto': updated_product.id_producto,
+                'nombre_producto': updated_product.nombre_producto,
+                'precio_venta': updated_product.precio_venta,
+                'precio_costo': updated_product.precio_costo,
+                'stock': updated_product.stock,
+                'categoria': updated_product.categoria,
+                'personalizable': updated_product.personalizable
+            }
+        return None
+    
+    @staticmethod
+    def deleteProducto(idProducto):
+        producto = ProductoRepository.getProductoById(idProducto)
+        if producto:
+            ProductoRepository.deleteProducto(idProducto)
+            return True
+        return False

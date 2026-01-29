@@ -39,5 +39,5 @@ class ProductoRepository:
         return Productos.objects.get(id_producto=idProducto)
     
     @staticmethod
-    def deleteProducto(self, idProducto):
+    def deleteProducto(idProducto):
         Productos.objects.filter(id_producto=idProducto).delete()

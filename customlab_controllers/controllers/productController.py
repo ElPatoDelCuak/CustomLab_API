@@ -21,3 +21,18 @@ def createProducto(request):
     data = request.data
     new_product = ProductoService.createProducto(data)
     return Response(new_product, status=201)
+
+@api_view(['PUT'])
+def updateProducto(request, id):
+    data = request.data
+    updated_product = ProductoService.updateProducto(id, data)
+    if updated_product is None:
+        return Response({'error': 'Producto not found'}, status=404)
+    return Response(updated_product)
+
+@api_view(['DELETE'])
+def deleteProducto(request, id):
+    success = ProductoService.deleteProducto(id)
+    if not success:
+        return Response({'error': 'Producto not found'}, status=404)
+    return Response(status=204)
