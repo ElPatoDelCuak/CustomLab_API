@@ -29,12 +29,12 @@ class ProductoRepository:
     @staticmethod
     def updateProducto(idProducto, data):
         Productos.objects.filter(id_producto=idProducto).update(
-            nombre_producto=data[1],
-            precio_venta=data[2],
-            precio_costo=data[3],
-            stock=data[4],
-            categoria=data[5],
-            personalizable=data[6],
+            nombre_producto=data.get('nombre_producto'),
+            precio_venta=data.get('precio_venta'),
+            precio_costo=data.get('precio_costo'),
+            stock=data.get('stock'),
+            categoria=data.get('categoria'),
+            personalizable=data.get('personalizable'),
         )
         return Productos.objects.get(id_producto=idProducto)
     
