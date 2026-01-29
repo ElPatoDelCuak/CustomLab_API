@@ -17,12 +17,12 @@ class ProductoRepository:
     @staticmethod
     def createProducto(self, data):
         return Productos.objects.create(
-            nombre_producto=data.nombre_producto,
-            precio_venta=data.precio_venta,
-            precio_costo=data.precio_costo,
-            stock=data.stock,
-            categoria=data.categoria,
-            personalizable=data.personalizable,
+            nombre_producto=data.get('nombre_producto'),
+            precio_venta=data.get('precio_venta'),
+            precio_costo=data.get('precio_costo'),
+            stock=data.get('stock'),
+            categoria=data.get('categoria'),
+            personalizable=data.get('personalizable'),
         )
     @staticmethod
     def updateProducto(self, idProducto, data):
