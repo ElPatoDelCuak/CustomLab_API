@@ -1,12 +1,16 @@
-from .core.models import Productos
+from customlab_models.models import Productos
+
 class ProductoModel:
-    def getProductos(self):
+    @staticmethod
+    def getProductos():
         return Productos.objects.all().values(
             'id_producto', 'precio_venta', 'precio_costo',
-        'stock', 'categoria', 'personalizable'
+            'stock', 'categoria', 'personalizable'
         )
-    def getProductoById(self, idProducto):
+
+    @staticmethod
+    def getProductoById(idProducto):
         return Productos.objects.filter(id_producto=idProducto).values(
             'id_producto', 'precio_venta', 'precio_costo',
-        'stock', 'categoria', 'personalizable'
+            'stock', 'categoria', 'personalizable'
         )
