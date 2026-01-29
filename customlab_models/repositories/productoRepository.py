@@ -14,8 +14,9 @@ class ProductoRepository:
             'id_producto', 'precio_venta', 'precio_costo',
             'stock', 'categoria', 'personalizable'
         )
+    
     @staticmethod
-    def createProducto(self, data):
+    def createProducto(data):
         return Productos.objects.create(
             nombre_producto=data.get('nombre_producto'),
             precio_venta=data.get('precio_venta'),
@@ -24,8 +25,9 @@ class ProductoRepository:
             categoria=data.get('categoria'),
             personalizable=data.get('personalizable'),
         )
+    
     @staticmethod
-    def updateProducto(self, idProducto, data):
+    def updateProducto(idProducto, data):
         Productos.objects.filter(id_producto=idProducto).update(
             nombre_producto=data[1],
             precio_venta=data[2],
@@ -35,6 +37,7 @@ class ProductoRepository:
             personalizable=data[6],
         )
         return Productos.objects.get(id_producto=idProducto)
+    
     @staticmethod
     def deleteProducto(self, idProducto):
         Productos.objects.filter(id_producto=idProducto).delete()

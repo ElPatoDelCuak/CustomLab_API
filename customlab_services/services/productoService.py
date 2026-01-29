@@ -4,9 +4,22 @@ class ProductoService:
     @staticmethod
     def getProductos():
         productos = ProductoRepository.getProductos()
-        return list(productos)
+        return list(productos) or None
 
     @staticmethod
     def getProductoById(idProducto):
         producto = ProductoRepository.getProductoById(idProducto)
-        return list(producto)
+        return list(producto) or None
+    
+    @staticmethod
+    def createProducto(data):
+        new_product = ProductoRepository.createProducto(data)
+        return {
+            'id_producto': new_product.id_producto,
+            'nombre_producto': new_product.nombre_producto,
+            'precio_venta': new_product.precio_venta,
+            'precio_costo': new_product.precio_costo,
+            'stock': new_product.stock,
+            'categoria': new_product.categoria,
+            'personalizable': new_product.personalizable
+        }
