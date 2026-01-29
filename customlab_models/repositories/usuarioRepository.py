@@ -1,4 +1,4 @@
-from .core.models import Usuarios
+from customlab_models.models import Usuarios
 class UsuarioRepository:
     @staticmethod
     def getUsuarios(self):
