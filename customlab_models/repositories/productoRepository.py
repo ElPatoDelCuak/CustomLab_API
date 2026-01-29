@@ -1,6 +1,6 @@
 from customlab_models.models import Productos
 
-class ProductoModel:
+class ProductoRepository:
     @staticmethod
     def getProductos():
         return Productos.objects.all().values(
@@ -14,7 +14,7 @@ class ProductoModel:
             'id_producto', 'precio_venta', 'precio_costo',
             'stock', 'categoria', 'personalizable'
         )
-    
+    @staticmethod
     def createProducto(self, data):
         return Productos.objects.create(
             nombre_producto=data[1],
@@ -24,7 +24,7 @@ class ProductoModel:
             categoria=data[5],
             personalizable=data[6],
         )
-
+    @staticmethod
     def updateProducto(self, idProducto, data):
         Productos.objects.filter(id_producto=idProducto).update(
             nombre_producto=data[1],
@@ -35,6 +35,6 @@ class ProductoModel:
             personalizable=data[6],
         )
         return Productos.objects.get(id_producto=idProducto)
-    
+    @staticmethod
     def deleteProducto(self, idProducto):
         Productos.objects.filter(id_producto=idProducto).delete()
