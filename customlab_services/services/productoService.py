@@ -14,15 +14,17 @@ class ProductoService:
     @staticmethod
     def createProducto(data):
         new_product = ProductoRepository.createProducto(data)
-        return {
-            'id_producto': new_product.id_producto,
-            'nombre_producto': new_product.nombre_producto,
-            'precio_venta': new_product.precio_venta,
-            'precio_costo': new_product.precio_costo,
-            'stock': new_product.stock,
-            'categoria': new_product.categoria,
-            'personalizable': new_product.personalizable
-        }
+        if new_product:
+            return {
+                'id_producto': new_product.id_producto,
+                'nombre_producto': new_product.nombre_producto,
+                'precio_venta': new_product.precio_venta,
+                'precio_costo': new_product.precio_costo,
+                'stock': new_product.stock,
+                'categoria': new_product.categoria,
+                'personalizable': new_product.personalizable
+            }
+        return False
     
     @staticmethod
     def updateProducto(idProducto, data):
@@ -37,12 +39,11 @@ class ProductoService:
                 'categoria': updated_product.categoria,
                 'personalizable': updated_product.personalizable
             }
-        return None
+        return False
     
     @staticmethod
     def deleteProducto(idProducto):
         producto = ProductoRepository.getProductoById(idProducto)
         if producto:
             ProductoRepository.deleteProducto(idProducto)
-            return True
         return False
