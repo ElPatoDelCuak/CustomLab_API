@@ -1,7 +1,7 @@
 from customlab_models.models import Usuarios
 class UsuarioRepository:
     @staticmethod
-    def getUsuarios(self):
+    def getUsuarios():
         return Usuarios.objects.all().values(
             'id_usuario','nombre','apellidos','email','fecha_nacimiento','twofa','rol'
         )

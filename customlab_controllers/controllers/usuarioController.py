@@ -3,36 +3,36 @@ from rest_framework.response import Response
 from customlab_services.services.usuarioService import UsuarioService
 
 @api_view(['GET'])
-def getProductos(request):
-    usuarios = UsuarioService.getProductos()
+def getUsuarios(request):
+    usuarios = UsuarioService.getUsuarios()
     if usuarios is None:
-        return Response({'error': 'No products found'}, status=404)
+        return Response({'error': 'No users found'}, status=404)
     return Response(usuarios)
 
 @api_view(['GET'])
-def getProductoById(request, id):
-    usuario = UsuarioService.getProductoById(id)
+def getUsuarioById(request, id):
+    usuario = UsuarioService.getUsuarioById(id)
     if usuario is None:
-        return Response({'error': 'Producto not found'}, status=404)
+        return Response({'error': 'Usuario not found'}, status=404)
     return Response(usuario)
 
 @api_view(['POST'])
-def createProducto(request):
+def createUsuario(request):
     data = request.data
-    new_user = UsuarioService.createProducto(data)
+    new_user = UsuarioService.createUsuario(data)
     return Response(new_user, status=201)
 
 @api_view(['PUT'])
-def updateProducto(request, id):
+def updateUsuario(request, id):
     data = request.data
-    updated_user = UsuarioService.updateProducto(id, data)
+    updated_user = UsuarioService.updateUsuario(id, data)
     if updated_user is None:
-        return Response({'error': 'Producto not found'}, status=404)
+        return Response({'error': 'Usuario not found'}, status=404)
     return Response(updated_user)
 
 @api_view(['DELETE'])
-def deleteProducto(request, id):
-    success = UsuarioService.deleteProducto(id)
+def deleteUsuario(request, id):
+    success = UsuarioService.deleteUsuario(id)
     if not success:
-        return Response({'error': 'Producto not found'}, status=404)
+        return Response({'error': 'Usuario not found'}, status=404)
     return Response(status=204)
