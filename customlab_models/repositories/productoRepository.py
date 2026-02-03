@@ -3,7 +3,7 @@ from customlab_models.models import Productos
 class ProductoRepository:
     @staticmethod
     def getProductos():
-        return Productos.objects.all().values(
+        return Productos.objects.all().order_by('id_producto').values(
             'id_producto', 'nombre_producto', 'precio_venta', 'precio_costo', 
             'stock', 'categoria', 'personalizable'
         )
@@ -17,7 +17,7 @@ class ProductoRepository:
     
     @staticmethod
     def createProducto(data):
-        return Productos.objects.create(
+        Productos.objects.create(
             nombre_producto=data.get('nombre_producto'),
             precio_venta=data.get('precio_venta'),
             precio_costo=data.get('precio_costo'),
@@ -25,6 +25,9 @@ class ProductoRepository:
             categoria=data.get('categoria'),
             personalizable=data.get('personalizable'),
         )
+        if Productos.objects.exists():
+            return True
+        return False
     
     @staticmethod
     def updateProducto(idProducto, data):
@@ -36,8 +39,13 @@ class ProductoRepository:
             categoria=data.get('categoria'),
             personalizable=data.get('personalizable'),
         )
-        return Productos.objects.get(id_producto=idProducto)
+        if Productos.objects.filter(id_producto=idProducto).exists():
+            return True
+        return False
     
     @staticmethod
     def deleteProducto(idProducto):
         Productos.objects.filter(id_producto=idProducto).delete()
+        if not Productos.objects.filter(id_producto=idProducto).exists():
+            return True
+        return False
