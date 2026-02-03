@@ -26,7 +26,7 @@ def createUsuario(request):
 def updateUsuario(request, id):
     data = request.data
     updated_user = UsuarioService.updateUsuario(id, data)
-    if updated_user is None:
+    if updated_user is False:
         return Response({'error': 'Usuario not found'}, status=404)
     return Response(updated_user)
 
