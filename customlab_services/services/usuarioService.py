@@ -30,4 +30,5 @@ class UsuarioService:
         usuario = UsuarioRepository.getUsuarioById(idUsuario)
         if usuario:
             UsuarioRepository.deleteUsuario(idUsuario)
+            return True
         return False
