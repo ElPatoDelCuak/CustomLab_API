@@ -31,7 +31,7 @@ class UsuarioRepository:
             twofa=data.get('twofa'),
             rol=data.get('rol'),
         )
-        return Usuarios.objects.get(id_usuario=idUsuario)
+        return True
     @staticmethod
     def deleteUsuario(idUsuario):
         Usuarios.objects.filter(id_usuario=idUsuario).delete()
