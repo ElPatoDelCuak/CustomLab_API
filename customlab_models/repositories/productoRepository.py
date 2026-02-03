@@ -3,10 +3,11 @@ from customlab_models.models import Productos
 class ProductoRepository:
     @staticmethod
     def getProductos():
-        return Productos.objects.all().values(
-            'id_producto', 'nombre_producto', 'precio_venta', 'precio_costo', 
+        return Productos.objects.all().order_by('id_producto').values(
+            'id_producto', 'nombre_producto', 'precio_venta', 'precio_costo',
             'stock', 'categoria', 'personalizable'
         )
+
 
     @staticmethod
     def getProductoById(idProducto):
