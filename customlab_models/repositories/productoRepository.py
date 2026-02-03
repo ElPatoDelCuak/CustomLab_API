@@ -8,7 +8,6 @@ class ProductoRepository:
             'stock', 'categoria', 'personalizable'
         )
 
-
     @staticmethod
     def getProductoById(idProducto):
         return Productos.objects.filter(id_producto=idProducto).values(
