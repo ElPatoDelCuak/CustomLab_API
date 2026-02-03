@@ -13,37 +13,39 @@ class ProductoService:
     
     @staticmethod
     def createProducto(data):
-        new_product = ProductoRepository.createProducto(data)
-        if new_product:
+        success = ProductoRepository.createProducto(data)
+        if success:
             return {
-                'id_producto': new_product.id_producto,
-                'nombre_producto': new_product.nombre_producto,
-                'precio_venta': new_product.precio_venta,
-                'precio_costo': new_product.precio_costo,
-                'stock': new_product.stock,
-                'categoria': new_product.categoria,
-                'personalizable': new_product.personalizable
+                'success': True,
+                'message': 'Producto creado exitosamente'
             }
-        return False
+        return {
+            'success': False,
+            'message': 'Error al crear el producto'
+        }
     
     @staticmethod
     def updateProducto(idProducto, data):
-        updated_product = ProductoRepository.updateProducto(idProducto, data)
-        if updated_product:
+        success = ProductoRepository.updateProducto(idProducto, data)
+        if success:
             return {
-                'id_producto': updated_product.id_producto,
-                'nombre_producto': updated_product.nombre_producto,
-                'precio_venta': updated_product.precio_venta,
-                'precio_costo': updated_product.precio_costo,
-                'stock': updated_product.stock,
-                'categoria': updated_product.categoria,
-                'personalizable': updated_product.personalizable
+                'success': True,
+                'message': 'Producto actualizado exitosamente'
             }
-        return False
+        return {
+            'success': False,
+            'message': 'Error al actualizar el producto'
+        }
     
     @staticmethod
     def deleteProducto(idProducto):
-        producto = ProductoRepository.getProductoById(idProducto)
-        if producto:
-            ProductoRepository.deleteProducto(idProducto)
-        return False
+        success = ProductoRepository.deleteProducto(idProducto)
+        if success:
+            return {
+                'success': True,
+                'message': 'Producto eliminado exitosamente'
+            }
+        return {
+            'success': False,
+            'message': 'Error al eliminar el producto'
+        }

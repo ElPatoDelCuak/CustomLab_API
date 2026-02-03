@@ -19,20 +19,19 @@ def getProductoById(request, id):
 @api_view(['POST'])
 def createProducto(request):
     data = request.data
-    new_product = ProductoService.createProducto(data)
-    return Response(new_product, status=201)
+    result = ProductoService.createProducto(data)
+    status = 201 if result['success'] else 400
+    return Response(result, status=status)
 
 @api_view(['PUT'])
 def updateProducto(request, id):
     data = request.data
-    updated_product = ProductoService.updateProducto(id, data)
-    if updated_product is None:
-        return Response({'error': 'Producto not found'}, status=404)
-    return Response(updated_product)
+    result = ProductoService.updateProducto(id, data)
+    status = 200 if result['success'] else 400
+    return Response(result, status=status)
 
 @api_view(['DELETE'])
 def deleteProducto(request, id):
-    success = ProductoService.deleteProducto(id)
-    if not success:
-        return Response({'error': 'Producto not found'}, status=404)
-    return Response(status=204)
+    result = ProductoService.deleteProducto(id)
+    status = 200 if result['success'] else 400
+    return Response(result, status=status)
