@@ -35,4 +35,4 @@ class UsuarioRepository:
     @staticmethod
     def deleteUsuario(idUsuario):
         Usuarios.objects.filter(id_usuario=idUsuario).delete()
-        return Usuarios.objects.get(id_usuario=idUsuario)
+        return True
