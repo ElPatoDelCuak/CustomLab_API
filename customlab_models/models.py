@@ -261,7 +261,7 @@ class Usuarios(models.Model):
     password = models.CharField(max_length=255)
     email = models.CharField(unique=True, max_length=150)
     fecha_nacimiento = models.DateField(blank=True, null=True)
-    number_2fa = models.BooleanField(db_column='2fa', blank=True, null=True)  # Field renamed because it wasn't a valid Python identifier.
+    twofa = models.BooleanField(db_column='twofa', blank=True, null=True)  # Field renamed because it wasn't a valid Python identifier.
     rol = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
