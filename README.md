@@ -20,6 +20,7 @@ Está desarrollada con Python, Django y Django REST Framework, siguiendo una arq
 
 El proyecto sigue una arquitectura de 3 capas (Controllers, Services y Repositories):
 
+```
 customlab_api/          # Configuración principal de Django
 
 customlab_controllers/  # Controladores (vistas de la API)
@@ -36,6 +37,7 @@ customlab_models/       # Acceso a datos (repositorios)
 └── repositories/
     ├── productoRepository.py
     └── usuarioRepository.py
+```
 
 ---
 
