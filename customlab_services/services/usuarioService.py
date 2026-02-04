@@ -13,22 +13,42 @@ class UsuarioService:
     
     @staticmethod
     def createUsuario(data):
-        new_user = UsuarioRepository.createUsuario(data)
-        if new_user:
-            return True
-        return False
+        success = UsuarioRepository.createUsuario(data)
+        if success:
+            return {
+                'success': True,
+                'message': 'Usuario creado exitosamente'
+            }
+        return {
+            'success': False,
+            'message': 'Error al crear el usuario'
+        }
     
     @staticmethod
     def updateUsuario(idUsuario, data):
-        updated_user = UsuarioRepository.updateUsuario(idUsuario, data)
-        if updated_user:
-            return True
-        return False
+        success = UsuarioRepository.updateUsuario(idUsuario, data)
+        if success:
+            return {
+                'success': True,
+                'message': 'Usuario actualizado exitosamente'
+            }
+        return {
+            'success': False,
+            'message': 'Error al actualizar el usuario'
+        }
     
     @staticmethod
     def deleteUsuario(idUsuario):
-        usuario = UsuarioRepository.getUsuarioById(idUsuario)
-        if usuario:
-            UsuarioRepository.deleteUsuario(idUsuario)
-            return True
-        return False
+        user = UsuarioRepository.getUsuarioById(idUsuario)
+        if not user:
+            return False
+        success = UsuarioRepository.deleteUsuario(idUsuario)
+        if success:
+            return {
+                'success': True,
+                'message': 'Usuario eliminado exitosamente'
+            }
+        return {
+            'success': False,
+            'message': 'Error al eliminar el usuario'
+        }

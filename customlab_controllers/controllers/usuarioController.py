@@ -19,20 +19,25 @@ def getUsuarioById(request, id):
 @api_view(['POST'])
 def createUsuario(request):
     data = request.data
-    new_user = UsuarioService.createUsuario(data)
-    return Response(new_user, status=201)
+    result = UsuarioService.createUsuario(data)
+    if result['success']:
+        return Response(result, status=201)
+    else:
+        return Response(result, status=400)
 
 @api_view(['PUT'])
 def updateUsuario(request, id):
     data = request.data
-    updated_user = UsuarioService.updateUsuario(id, data)
-    if updated_user is False:
-        return Response({'error': 'Usuario not found'}, status=404)
-    return Response(updated_user)
+    result = UsuarioService.updateUsuario(id, data)
+    if result['success']:
+        return Response(result, status=200)
+    else:
+        return Response(result, status=400)
 
 @api_view(['DELETE'])
 def deleteUsuario(request, id):
-    success = UsuarioService.deleteUsuario(id)
-    if not success:
-        return Response({'error': 'Usuario not found'}, status=404)
-    return Response(status=204)
+    result = UsuarioService.deleteUsuario(id)
+    if result['success']:
+        return Response(result, status=200)
+    else:
+        return Response(result, status=400)

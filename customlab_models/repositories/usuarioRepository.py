@@ -5,11 +5,13 @@ class UsuarioRepository:
         return Usuarios.objects.all().values(
             'id_usuario','nombre','apellidos','email','fecha_nacimiento','twofa','rol'
         )
+    
     @staticmethod
     def getUsuarioById(idUsuario):
         return Usuarios.objects.filter(id_usuario=idUsuario).values(
             'id_usuario','nombre','apellidos','email','fecha_nacimiento','twofa','rol'
         )
+    
     @staticmethod
     def createUsuario(data):
         Usuarios.objects.create(
@@ -20,7 +22,10 @@ class UsuarioRepository:
             twofa=data.get('twofa'),
             rol=data.get('rol'),
         )
-        return Usuarios.objects.last()
+        if Usuarios.objects.exists():
+            return True
+        return False
+    
     @staticmethod
     def updateUsuario(idUsuario, data):
         Usuarios.objects.filter(id_usuario=idUsuario).update(
@@ -31,8 +36,13 @@ class UsuarioRepository:
             twofa=data.get('twofa'),
             rol=data.get('rol'),
         )
-        return True
+        if Usuarios.objects.filter(id_usuario=idUsuario).exists():
+            return True
+        return False
+    
     @staticmethod
     def deleteUsuario(idUsuario):
         Usuarios.objects.filter(id_usuario=idUsuario).delete()
-        return True
+        if not Usuarios.objects.filter(id_usuario=idUsuario).exists():
+            return True
+        return False
