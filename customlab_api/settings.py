@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
-    'core',
+    'customlab_controllers',
+    'customlab_models',
+    'customlab_services',
 ]
 
 MIDDLEWARE = [
