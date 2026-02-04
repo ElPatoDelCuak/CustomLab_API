@@ -4,23 +4,29 @@ class ProductoService:
     @staticmethod
     def getProductos():
         productos = ProductoRepository.getProductos()
-        if productos is None:
+        if productos:
             return {
-                'success': False,
-                'message': 'No products found'
+                'success': True,
+                'data': list(productos)
             }
-        return list(productos)
+        return {
+            'success': False,
+            'message': 'No products found'
+        }
 
     @staticmethod
     def getProductoById(idProducto):
         producto = ProductoRepository.getProductoById(idProducto)
-        if producto is None:
+        if producto:
             return {
-                'success': False,
-                'message': 'Producto not found'
+                'success': True,
+                'data': list(producto)
             }
-        return list(producto)
-    
+        return {
+            'success': False,
+            'message': 'Producto not found'
+        }
+
     @staticmethod
     def createProducto(data):
         exist = ProductoRepository.getProductoById(data.get('id_producto'))
