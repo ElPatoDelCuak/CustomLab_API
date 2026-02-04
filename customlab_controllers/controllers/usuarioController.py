@@ -5,16 +5,18 @@ from customlab_services.services.usuarioService import UsuarioService
 @api_view(['GET'])
 def getUsuarios(request):
     usuarios = UsuarioService.getUsuarios()
-    if usuarios is None:
-        return Response({'error': 'No users found'}, status=404)
-    return Response(usuarios)
+    if usuarios ['success']:
+        return Response(usuarios, status=200)
+    else:
+        return Response(usuarios, status=404)
 
 @api_view(['GET'])
 def getUsuarioById(request, id):
     usuario = UsuarioService.getUsuarioById(id)
-    if usuario is None:
-        return Response({'error': 'Usuario not found'}, status=404)
-    return Response(usuario)
+    if usuario ['success']:
+        return Response(usuario, status=200)
+    else:
+        return Response(usuario, status=404)
 
 @api_view(['POST'])
 def createUsuario(request):

@@ -20,7 +20,7 @@ class ProductoService:
         if producto:
             return {
                 'success': True,
-                'data': list(producto)
+                'data': producto
             }
         return {
             'success': False,

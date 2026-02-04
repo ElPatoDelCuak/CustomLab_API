@@ -5,16 +5,18 @@ from customlab_services.services.productoService import ProductoService
 @api_view(['GET'])
 def getProductos(request):
     productos = ProductoService.getProductos()
-    if productos['success'] == False:
+    if productos['success']:
+        return Response(productos, status=200)
+    else:
         return Response(productos, status=404)
-    return Response(productos)
 
 @api_view(['GET'])
 def getProductoById(request, id):
     producto = ProductoService.getProductoById(id)
-    if producto['success'] == False:
+    if producto['success']:
+        return Response(producto, status=200)
+    else:
         return Response(producto, status=404)
-    return Response(producto)
 
 @api_view(['POST'])
 def createProducto(request):

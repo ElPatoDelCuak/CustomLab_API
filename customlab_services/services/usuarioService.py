@@ -4,12 +4,28 @@ class UsuarioService:
     @staticmethod
     def getUsuarios():
         usuarios = UsuarioRepository.getUsuarios()
-        return list(usuarios) or None
+        if usuarios:
+            return {
+                'success': True,
+                'data': list(usuarios)
+            }
+        return {
+            'success': False,
+            'message': 'No users found'
+        }
 
     @staticmethod
     def getUsuarioById(idUsuario):
         usuario = UsuarioRepository.getUsuarioById(idUsuario)
-        return list(usuario) or None
+        if usuario:
+            return {
+                'success': True,
+                'data': usuario
+            }
+        return {
+            'success': False,
+            'message': 'Usuario not found'
+        }
     
     @staticmethod
     def createUsuario(data):

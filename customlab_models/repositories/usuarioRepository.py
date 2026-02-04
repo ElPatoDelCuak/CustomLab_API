@@ -2,16 +2,22 @@ from customlab_models.models import Usuarios
 class UsuarioRepository:
     @staticmethod
     def getUsuarios():
-        return Usuarios.objects.all().values(
+        usuarios = Usuarios.objects.all().values(
             'id_usuario','nombre','apellidos','email','fecha_nacimiento','twofa','rol'
         )
+        if not usuarios.exists():
+            return False
+        return usuarios
     
     @staticmethod
     def getUsuarioById(idUsuario):
-        return Usuarios.objects.filter(id_usuario=idUsuario).values(
+        usuario = Usuarios.objects.filter(id_usuario=idUsuario).values(
             'id_usuario','nombre','apellidos','email','fecha_nacimiento','twofa','rol'
         )
-    
+        if not usuario.exists():
+            return False
+        return usuario
+
     @staticmethod
     def createUsuario(data):
         Usuarios.objects.create(
