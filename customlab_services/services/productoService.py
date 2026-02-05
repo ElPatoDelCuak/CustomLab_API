@@ -83,3 +83,13 @@ class ProductoService:
             'success': False,
             'message': 'Error al eliminar el producto'
         }
+    @staticmethod
+    def verifyProducto(data):
+        pass
+    @staticmethod
+    def verifyUpdateProducto(data):
+        pass
+    @staticmethod
+    def verificarStockProducto(idProducto, cantidad):
+        pass
+    
