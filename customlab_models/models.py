@@ -176,7 +176,7 @@ class Incidencias(models.Model):
     id_incidencia = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_usuario')
     tipo = models.CharField(max_length=100)
-    fecha = models.DateTimeField()
+    fecha = models.DateTimeField(blank=True, null=True)
     estado = models.CharField(max_length=50)
     descripcion = models.TextField()
 
@@ -261,7 +261,7 @@ class Usuarios(models.Model):
     password = models.CharField(max_length=255)
     email = models.CharField(unique=True, max_length=150)
     fecha_nacimiento = models.DateField(blank=True, null=True)
-    twofa = models.BooleanField(db_column='twofa', blank=True, null=True)  # Field renamed because it wasn't a valid Python identifier.
+    twofa = models.BooleanField(blank=True, null=True)
     rol = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:

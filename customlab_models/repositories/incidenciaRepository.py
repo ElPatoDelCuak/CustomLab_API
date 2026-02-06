@@ -26,7 +26,7 @@ class IncidenciaRepository:
             id_usuario=Usuarios.objects.get(id_usuario=data.get('id_usuario')),
             tipo=data.get('tipo'),
             estado=data.get('estado'),
-            descripcion=data.get('descripcion')
+            descripcion=data.get('descripcion'),
         )
         if Incidencias.objects.exists():
             return True
