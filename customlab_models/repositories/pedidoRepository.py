@@ -28,7 +28,6 @@ class PedidoRepository:
             id_usuario=Usuarios.objects.get(id=data['id_usuario']),
             estado=data.get('estado'),
             total=data.get('total'),
-            fecha=data.get('fecha'),
             direccion=data.get('direccion'),
             numero_piso=data.get('numero_piso'),
         )
