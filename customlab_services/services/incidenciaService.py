@@ -66,7 +66,7 @@ class IncidenciaService:
     
     def deleteIncidencia(idIncidencia):
         exist = IncidenciaService.verifyIncidencia(idIncidencia)
-        if not exist:
+        if not exist['success']:
             return exist
         success = IncidenciaRepository.deleteIncidencia(idIncidencia)
         if success:
