@@ -25,7 +25,7 @@ class PedidoRepository:
     @staticmethod
     def createPedido(data):
         Pedidos.objects.create(
-            id_usuario=Usuarios.objects.get(id=data['id_usuario']),
+            id_usuario=data.get('id_usuario'),
             estado=data.get('estado'),
             total=data.get('total'),
             direccion=data.get('direccion'),

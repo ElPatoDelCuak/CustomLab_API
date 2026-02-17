@@ -3,7 +3,7 @@ class UsuarioRepository:
     @staticmethod
     def getUsuarios():
         usuarios = Usuarios.objects.all().values(
-            'id_usuario','nombre','apellidos','email','fecha_nacimiento','twofa','rol'
+            'id_usuario','nombre','apellidos','email','fecha_nacimiento','doble_factor','rol'
         )
         if not usuarios.exists():
             return False
@@ -12,7 +12,7 @@ class UsuarioRepository:
     @staticmethod
     def getUsuarioById(idUsuario):
         usuario = Usuarios.objects.filter(id_usuario=idUsuario).values(
-            'id_usuario','nombre','apellidos','email','fecha_nacimiento','twofa','rol'
+            'id_usuario','nombre','apellidos','email','fecha_nacimiento','doble_factor','rol'
         )
         if not usuario.exists():
             return False
@@ -25,7 +25,7 @@ class UsuarioRepository:
             apellidos=data.get('apellidos'),
             email=data.get('email'),
             fecha_nacimiento=data.get('fecha_nacimiento'),
-            twofa=data.get('twofa'),
+            doble_factor=data.get('doble_factor'),
             rol=data.get('rol'),
         )
         if Usuarios.objects.exists():
@@ -39,7 +39,7 @@ class UsuarioRepository:
             apellidos=data.get('apellidos'),
             email=data.get('email'),
             fecha_nacimiento=data.get('fecha_nacimiento'),
-            twofa=data.get('twofa'),
+            doble_factor=data.get('doble_factor'),
             rol=data.get('rol'),
         )
         if Usuarios.objects.filter(id_usuario=idUsuario).exists():
