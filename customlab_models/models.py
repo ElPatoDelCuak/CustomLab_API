@@ -175,7 +175,7 @@ class Incidencias(models.Model):
     id_incidencia = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_usuario')
     tipo = models.CharField()
-    fecha = models.DateTimeField()
+    fecha = models.DateTimeField(auto_now_add=True)
     estado_incidencia = models.CharField()
     descripcion = models.TextField()
 

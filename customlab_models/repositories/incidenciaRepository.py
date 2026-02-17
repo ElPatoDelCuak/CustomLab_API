@@ -22,14 +22,18 @@ class IncidenciaRepository:
     
     @staticmethod
     def createIncidencia(data):
-        Incidencias.objects.create(
-            id_usuario=Usuarios.objects.get(id_usuario=data.get('id_usuario')),
-            tipo=data.get('tipo'),
-            estado_incidencia=data.get('estado'),
-            descripcion=data.get('descripcion'),
-        )
-        if Incidencias.objects.exists():
-            return True
+        try:
+            usuario = Usuarios.objects.get(id_usuario=data.get('id_usuario'))
+            Incidencias.objects.create(
+                id_usuario=usuario,
+                tipo=data.get('tipo'),
+                estado_incidencia=data.get('estado'),
+                descripcion=data.get('descripcion'),
+            )
+            if Incidencias.objects.exists():
+                return True
+        except Usuarios.DoesNotExist:
+            return False
         return False
     
     @staticmethod
