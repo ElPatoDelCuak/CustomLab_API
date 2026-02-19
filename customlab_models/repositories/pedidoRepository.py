@@ -38,10 +38,9 @@ class PedidoRepository:
     @staticmethod
     def updatePedido(idPedido, data):
         Pedidos.objects.filter(id_pedido=idPedido).update(
-            id_usuario=Usuarios.objects.get(id=data['id_usuario']),
+            id_usuario=data.get('id_usuario'),
             estado=data.get('estado'),
             total=data.get('total'),
-            fecha=data.get('fecha'),
             direccion=data.get('direccion'),
             numero_piso=data.get('numero_piso'),
         )
