@@ -68,3 +68,10 @@ class UsuarioService:
             'success': False,
             'message': 'Error al eliminar el usuario'
         }
+    @staticmethod
+    def verifyUsuario(data):
+        pass
+    @staticmethod
+    def verifyUpdateUsuario(data):
+        pass
+    
