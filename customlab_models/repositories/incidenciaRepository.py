@@ -4,7 +4,7 @@ from customlab_models.models import Usuarios
 class IncidenciaRepository:
     @staticmethod
     def getIncidencias():
-        incidencias = Incidencias.objects.all().values(
+        incidencias = Incidencias.objects.all().order_by('-fecha').values(
             'id_incidencia', 'id_usuario', 'tipo', 'fecha', 'estado_incidencia', 'descripcion'
         )
         if not incidencias.exists():
