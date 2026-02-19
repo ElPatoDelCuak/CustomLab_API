@@ -4,8 +4,8 @@ from customlab_models.models import Usuarios
 class IncidenciaRepository:
     @staticmethod
     def getIncidencias():
-        incidencias = Incidencias.objects.all().values(
-            'id_incidencia', 'id_usuario', 'tipo', 'fecha', 'estado', 'descripcion'
+        incidencias = Incidencias.objects.all().order_by('-fecha').values(
+            'id_incidencia', 'id_usuario', 'tipo', 'fecha', 'estado_incidencia', 'descripcion'
         )
         if not incidencias.exists():
             return False
@@ -14,7 +14,7 @@ class IncidenciaRepository:
     @staticmethod
     def getIncidenciaById(idIncidencia):
         incidencia = Incidencias.objects.filter(id_incidencia=idIncidencia).values(
-            'id_incidencia', 'id_usuario', 'tipo', 'fecha', 'estado', 'descripcion'
+            'id_incidencia', 'id_usuario', 'tipo', 'fecha', 'estado_incidencia', 'descripcion'
         )
         if not incidencia.exists():
             return False
@@ -22,20 +22,24 @@ class IncidenciaRepository:
     
     @staticmethod
     def createIncidencia(data):
-        Incidencias.objects.create(
-            id_usuario=Usuarios.objects.get(id_usuario=data.get('id_usuario')),
-            tipo=data.get('tipo'),
-            estado=data.get('estado'),
-            descripcion=data.get('descripcion'),
-        )
-        if Incidencias.objects.exists():
-            return True
+        try:
+            usuario = Usuarios.objects.get(id_usuario=data.get('id_usuario'))
+            Incidencias.objects.create(
+                id_usuario=usuario,
+                tipo=data.get('tipo'),
+                estado_incidencia=data.get('estado'),
+                descripcion=data.get('descripcion'),
+            )
+            if Incidencias.objects.exists():
+                return True
+        except Usuarios.DoesNotExist:
+            return False
         return False
     
     @staticmethod
     def updateEstadoIncidencia(idIncidencia, data):
         Incidencias.objects.filter(id_incidencia=idIncidencia).update(
-            estado=data.get('estado')
+            estado_incidencia=data.get('estado')
         )
         if Incidencias.objects.filter(id_incidencia=idIncidencia).exists():
             return True
