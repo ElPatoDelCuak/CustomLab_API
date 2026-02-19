@@ -17,16 +17,17 @@ urlpatterns = [
     path('usuarios/create/', createUsuario),
     path('usuarios/update/<int:id>/', updateUsuario),
     path('usuarios/delete/<int:id>/', deleteUsuario),
-    #Pedido URLs
-
-
-
-
-
     #Incidencias URLs
     path('incidencias/', getIncidencias),
     path('incidencias/<int:id>/', getIncidenciaById),
     path('incidencias/create/', createIncidencia),
     path('incidencias/update/<int:id>/', updateEstadoIncidencia),
     path('incidencias/delete/<int:id>/', deleteIncidencia),
+    #Productos Personalizados URLs
+    path('producto_personalizado/', getProductoPersonalizado),
+    path('producto_personalizado/<int:id>/', getProductoPersonalizadoById),
+    path('producto_personalizado/create/', createProductoPersonalizado),
+    path('producto_personalizado/update/<int:id>/', updateEstadoProductoPersonalizado),
+    path('producto_personalizado/delete/<int:id>/', deleteProductoPersonalizado),
+
 ]
