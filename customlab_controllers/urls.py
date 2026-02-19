@@ -3,6 +3,8 @@ from .controllers.productoController import getProductos, getProductoById, creat
 from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
 
+from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
+
 urlpatterns = [
     #Productos URLs
     path('productos/', getProductos),
@@ -22,4 +24,10 @@ urlpatterns = [
     path('pedidos/create/', createPedido),
     path('pedidos/update/<int:id>/', updatePedido),
     path('pedidos/delete/<int:id>/', deletePedido),
+    #Incidencias URLs
+    path('incidencias/', getIncidencias),
+    path('incidencias/<int:id>/', getIncidenciaById),
+    path('incidencias/create/', createIncidencia),
+    path('incidencias/update/<int:id>/', updateEstadoIncidencia),
+    path('incidencias/delete/<int:id>/', deleteIncidencia),
 ]
