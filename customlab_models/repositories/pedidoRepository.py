@@ -24,8 +24,9 @@ class PedidoRepository:
 
     @staticmethod
     def createPedido(data):
+        usuario = Usuarios.objects.get(id_usuario=data.get('id_usuario'))
         Pedidos.objects.create(
-            id_usuario=data.get('id_usuario'),
+            id_usuario=usuario,
             estado=data.get('estado'),
             total=data.get('total'),
             direccion=data.get('direccion'),
@@ -37,8 +38,9 @@ class PedidoRepository:
 
     @staticmethod
     def updatePedido(idPedido, data):
+        usuario = Usuarios.objects.get(id_usuario=data.get('id_usuario'))
         Pedidos.objects.filter(id_pedido=idPedido).update(
-            id_usuario=data.get('id_usuario'),
+            id_usuario=usuario,
             estado=data.get('estado'),
             total=data.get('total'),
             direccion=data.get('direccion'),
