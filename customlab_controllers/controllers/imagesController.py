@@ -1,10 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from customlab_services.services.imagesService import imagesService
+from customlab_services.services.imagesService import ImagesService
 
 @api_view(['GET'])
 def getImagesByUserId(request, user_id):
-    images = imagesService.getImagesByUserId(user_id) 
+    images = ImagesService.getImagesByUserId(user_id) 
     if images['success']:
         return Response(images, status=200)
     else:
@@ -13,7 +13,7 @@ def getImagesByUserId(request, user_id):
 @api_view(['POST'])
 def uploadImage(request):
     data = request.data
-    result = imagesService.uploadImage(data)
+    result = ImagesService.uploadImage(data)
     if result['success']:
         return Response(result, status=201)
     else:
@@ -21,7 +21,7 @@ def uploadImage(request):
     
 @api_view(['DELETE'])
 def deleteImage(request, image_id):
-    result = imagesService.deleteImage(image_id)
+    result = ImagesService.deleteImage(image_id)
     if result['success']:
         return Response(result, status=200)
     else:
