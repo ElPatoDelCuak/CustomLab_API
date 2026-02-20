@@ -77,8 +77,12 @@ class ImagesService:
     
     @staticmethod
     def deleteImageFile(image_path):
-        if os.path.exists(image_path):
-            os.remove(image_path)
+        file_path = image_path
+        if image_path.startswith(settings.MEDIA_URL):
+            relative_path = image_path.replace(settings.MEDIA_URL, '', 1)
+            file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
             return True
         return False
     
