@@ -64,14 +64,14 @@ class ImagesService:
 
         timestamp = int(time.time())
         image_name = f'{user_id}_{image.name}_{timestamp}.jpg'
-        image_path = os.path.join(user_dir, image_name)  # ruta local para guardar el archivo
+        image_path = os.path.join(user_dir, image_name)
 
         with open(image_path, 'wb+') as f:
             for chunk in image.chunks():
                 f.write(chunk)
 
         if os.path.exists(image_path):
-            image_url = f'{settings.MEDIA_URL}images/{user_id}/{image_name}'  # URL para la web
+            image_url = f'{settings.MEDIA_URL}images/{user_id}/{image_name}'
             return image_url
         return None
     
