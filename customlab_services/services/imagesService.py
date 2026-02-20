@@ -1,6 +1,10 @@
 import os, time
+
+BASE_IMAGES_DIR = 'images'
 class ImagesService:
-    def getImagesImagesByUserId(user_id):
+
+    @staticmethod
+    def getImagesByUserId(user_id):
         images = ImagesRepository.getImagesByUserId(user_id)
         if images:
             return {
@@ -12,6 +16,7 @@ class ImagesService:
             'message': 'No images found for this user'
         }
     
+    @staticmethod
     def uploadImage(data):
         image = data.get('image')
         user_id = data.get('user_id')
@@ -39,7 +44,21 @@ class ImagesService:
             'message': 'Error uploading image'
         }
     
+    @staticmethod
     def deleteImage(image_id):
+        image = ImagesRepository.getImageById(image_id)
+        if not image:
+            return {
+                'success': False,
+                'message': 'Image not found'
+            }
+        image_path = image['image_path']
+        file_deleted = ImagesService.deleteImageFile(image_path)
+        if not file_deleted:
+            return {
+                'success': False,
+                'message': 'Error deleting image file'
+            }
         success = ImagesRepository.deleteImage(image_id)
         if success:
             return {
@@ -51,12 +70,20 @@ class ImagesService:
             'message': 'Error deleting image'
         }
     
+    @staticmethod
     def saveImage(image, user_id):
-        os.makedirs(f'images/{user_id}', exist_ok=True)
+        os.makedirs(f'{BASE_IMAGES_DIR}/{user_id}', exist_ok=True)
         timestamp = int(time.time())
         image_name = f'{user_id}_{image.name}_{timestamp}.jpg'
-        image.save(f'images/{user_id}/{image_name}')
-        image_path = f'images/{user_id}/{image_name}'
+        image.save(f'{BASE_IMAGES_DIR}/{user_id}/{image_name}')
+        image_path = f'{BASE_IMAGES_DIR}/{user_id}/{image_name}'
         if os.path.exists(image_path):
             return image_path
         return None
+    
+    @staticmethod
+    def deleteImageFile(image_path):
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            return True
+        return False
