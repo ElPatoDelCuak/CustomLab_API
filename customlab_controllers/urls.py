@@ -2,8 +2,8 @@ from django.urls import path
 from .controllers.productoController import getProductos, getProductoById, createProducto, updateProducto, deleteProducto
 from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
-
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
+from .controllers.imagesController import getImagesByUserId, uploadImage, deleteImage
 
 urlpatterns = [
     #Productos URLs
@@ -30,4 +30,8 @@ urlpatterns = [
     path('incidencias/create/', createIncidencia),
     path('incidencias/update/<int:id>/', updateEstadoIncidencia),
     path('incidencias/delete/<int:id>/', deleteIncidencia),
+    # Images URLs
+    path('images/user/<int:user_id>/', getImagesByUserId),
+    path('images/upload/', uploadImage),
+    path('images/delete/<int:image_id>/', deleteImage),
 ]

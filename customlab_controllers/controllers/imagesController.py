@@ -25,4 +25,4 @@ def deleteImage(request, image_id):
     if result['success']:
         return Response(result, status=200)
     else:
-        return Response(result, status=400)
+        return Response(result, status=404)
