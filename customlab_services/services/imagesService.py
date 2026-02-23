@@ -59,7 +59,7 @@ class ImagesService:
     
     @staticmethod
     def saveImage(image, user_id):
-        user_dir = os.path.join(settings.MEDIA_ROOT, 'images', str(user_id))
+        user_dir = os.path.join(settings.MEDIA_ROOT, 'images', 'users', str(user_id))
         os.makedirs(user_dir, exist_ok=True)
 
         timestamp = int(time.time())
@@ -71,7 +71,7 @@ class ImagesService:
                 f.write(chunk)
 
         if os.path.exists(image_path):
-            image_url = f'{settings.MEDIA_URL}images/{user_id}/{image_name}'
+            image_url = f'{settings.MEDIA_URL}images/users/{user_id}/{image_name}'
             return image_url
         return None
     
