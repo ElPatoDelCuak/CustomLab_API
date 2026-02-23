@@ -7,21 +7,23 @@ class ImagesService:
     
     @staticmethod
     def saveImage(image, id, upload_type):
+        if upload_type not in [1, 2, 3]:
+            return None
         if upload_type == 1:
-            dir = os.path.join(settings.MEDIA_ROOT, 'images', 'users', str(id))
+            target_dir = os.path.join(BASE_IMAGES_DIR, 'users', str(id))
             dir_name = 'users'
         if upload_type == 2:
-            dir = os.path.join(settings.MEDIA_ROOT, 'images', 'personalizable_clothes', str(id))
+            target_dir = os.path.join(BASE_IMAGES_DIR, 'personalizable_clothes', str(id))
             dir_name = 'personalizable_clothes'
         if upload_type == 3:
-            dir = os.path.join(settings.MEDIA_ROOT, 'images', 'products', str(id))
+            target_dir = os.path.join(BASE_IMAGES_DIR, 'products', str(id))
             dir_name = 'products'
 
-        os.makedirs(dir, exist_ok=True)
+        os.makedirs(target_dir, exist_ok=True)
 
         timestamp = int(time.time())
         image_name = f'{id}_{image.name}_{timestamp}.jpg'
-        image_path = os.path.join(dir, image_name)
+        image_path = os.path.join(target_dir, image_name)
 
         with open(image_path, 'wb+') as f:
             for chunk in image.chunks():

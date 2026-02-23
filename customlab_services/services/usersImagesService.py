@@ -19,12 +19,12 @@ class UserImagesService:
     
     @staticmethod
     def uploadImage(data):
+        user_id = int(data.get('user_id'))
+        upload_type = int(data.get('upload_type'))
         image = data.get('image')
-        user_id = data.get('user_id')
-        upload_type = data.get('upload_type')
 
-        if not image or not user_id:
-            return {'success': False, 'message': 'Image and user_id are required'}
+        if not user_id or not upload_type or not image:
+            return {'success': False, 'message': 'Image, user_id and upload_type are required'}
 
         if not ImagesService.verifyImage(image):
             return {'success': False, 'message': 'Invalid image format'}
