@@ -6,7 +6,7 @@ BASE_IMAGES_DIR = os.path.join(settings.MEDIA_ROOT, 'images')
 class ImagesService:
     
     @staticmethod
-    def saveImage(image, id, upload_type):
+    def saveImage(id, upload_type, image):
         if upload_type not in [1, 2, 3]:
             return None
         if upload_type == 1:

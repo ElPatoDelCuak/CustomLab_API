@@ -28,7 +28,25 @@ class ProductoService:
         }
 
     @staticmethod
-    def createProducto(data):
+    def createProducto(data, images):
+        product_name = data.get('nombre_producto')
+        upload_type = int(data.get('upload_type'))
+        if not images or not product_name or not upload_type:
+            return {
+                'success': False,
+                'message': 'Product name, images and upload type are required'
+            }
+        for image in images:
+            if not ImagesService.verifyImage(image):
+                return {
+                    'success': False,
+                    'message': 'Invalid image format'
+                }
+            if not ImagesService.saveImage(product_name, upload_type, image):
+                return {
+                    'success': False,
+                    'message': 'Error saving image'
+                }
         success = ProductoRepository.createProducto(data)
         if success:
             return {

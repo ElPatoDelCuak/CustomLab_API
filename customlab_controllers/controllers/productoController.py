@@ -21,7 +21,8 @@ def getProductoById(request, id):
 @api_view(['POST'])
 def createProducto(request):
     data = request.data
-    result = ProductoService.createProducto(data)
+    images = request.FILES.getlist('images')
+    result = ProductoService.createProducto(data, images)
     if result['success']:
         return Response(result, status=201)
     else:

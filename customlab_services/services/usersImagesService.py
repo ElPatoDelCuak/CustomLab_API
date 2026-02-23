@@ -29,7 +29,7 @@ class UserImagesService:
         if not ImagesService.verifyImage(image):
             return {'success': False, 'message': 'Invalid image format'}
 
-        image_path = ImagesService.saveImage(image, user_id, upload_type)
+        image_path = ImagesService.saveImage(user_id, upload_type, image)
         if not image_path:
             return {'success': False, 'message': 'Error saving image'}
         
