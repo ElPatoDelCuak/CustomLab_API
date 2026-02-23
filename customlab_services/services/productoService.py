@@ -1,5 +1,8 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
+from django.conf import settings
+import os, time
 
+BASE_IMAGES_DIR = os.path.join(settings.MEDIA_ROOT, 'images')
 class ProductoService:
     @staticmethod
     def getProductos():
@@ -29,11 +32,18 @@ class ProductoService:
 
     @staticmethod
     def createProducto(data):
-        exist = ProductoRepository.getProductoById(data.get('id_producto'))
+        exist = ProductoRepository.getProductoById(data.get('producto', 'id_producto'))
         if exist:
             return {
                 'success': False,
                 'message': 'El producto ya existe'
+            }
+        images = data.get('images', [])
+        save_images = ProductoService.saveProductImages(images)
+        if not save_images['success']:
+            return {
+                'success': False,
+                'message': 'Error al guardar las imágenes del producto'
             }
         success = ProductoRepository.createProducto(data)
         if success:
@@ -92,4 +102,3 @@ class ProductoService:
     @staticmethod
     def verificarStockProducto(idProducto, cantidad):
         pass
-    
