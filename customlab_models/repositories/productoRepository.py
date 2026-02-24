@@ -1,4 +1,5 @@
 from customlab_models.models import Productos
+from customlab_models.models import ImagenesProductos
 
 class ProductoRepository:
     @staticmethod
@@ -9,31 +10,53 @@ class ProductoRepository:
         )
         if not productos.exists():
             return False
-        return productos
+        return list(productos)
 
     @staticmethod
     def getProductoById(idProducto):
-        producto =  Productos.objects.filter(id_producto=idProducto).values(
+        producto = Productos.objects.filter(id_producto=idProducto).values(
             'id_producto', 'nombre_producto', 'precio_venta', 'precio_costo',
             'stock', 'categoria', 'personalizable'
+        ).first()
+        return producto or None
+
+    @staticmethod
+    def getProductImages(idProducto):
+        return list(
+            ImagenesProductos.objects.filter(id_producto_id=idProducto)
+            .values('id_imagen_producto', 'ruta')
         )
-        if not producto.exists():
-            return False
-        return producto
+
+    @staticmethod
+    def deleteProductImages(idProducto):
+        ImagenesProductos.objects.filter(id_producto_id=idProducto).delete()
+        return True
     
     @staticmethod
     def createProducto(data):
-        Productos.objects.create(
-            nombre_producto=data.get('nombre_producto'),
-            precio_venta=data.get('precio_venta'),
-            precio_costo=data.get('precio_costo'),
-            stock=data.get('stock'),
-            categoria=data.get('categoria'),
-            personalizable=data.get('personalizable'),
-        )
-        if Productos.objects.exists():
+        try:
+            producto = Productos.objects.create(
+                nombre_producto=data.get('nombre_producto'),
+                precio_venta=data.get('precio_venta'),
+                precio_costo=data.get('precio_costo'),
+                stock=data.get('stock'),
+                categoria=data.get('categoria'),
+                personalizable=data.get('personalizable'),
+            )
+            return producto
+        except Exception:
+            return None
+    
+    @staticmethod
+    def saveProductImages(id_producto, image_path):
+        try:
+            ImagenesProductos.objects.create(
+                id_producto_id=id_producto,
+                ruta=image_path
+            )
             return True
-        return False
+        except Exception:
+            return False
     
     @staticmethod
     def updateProducto(idProducto, data):
@@ -52,6 +75,4 @@ class ProductoRepository:
     @staticmethod
     def deleteProducto(idProducto):
         Productos.objects.filter(id_producto=idProducto).delete()
-        if not Productos.objects.filter(id_producto=idProducto).exists():
-            return True
-        return False
+        return not Productos.objects.filter(id_producto=idProducto).exists()

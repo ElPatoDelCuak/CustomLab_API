@@ -1,6 +1,6 @@
 from customlab_models.models import ImagenesUsuario
 
-class ImagesRepository:
+class UserImagesRepository:
     
     @staticmethod
     def getImageById(image_id):
@@ -17,7 +17,7 @@ class ImagesRepository:
         return images
     
     @staticmethod
-    def uploadImage(data):
+    def uploadImagePath(data):
         image = ImagenesUsuario.objects.create(
             id_usuario_id=data.get('user_id'),
             ruta=data.get('image_path')
