@@ -3,6 +3,8 @@ from .controllers.productoController import getProductos, getProductoById, creat
 from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
+from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
+from .controllers.imagesController import getImagesByUserId, uploadImage, deleteImage
 
 urlpatterns = [
     #Productos URLs
@@ -13,10 +15,16 @@ urlpatterns = [
     path('productos/delete/<int:id>/', deleteProducto),
     #Usuario URLs
     path('usuarios/', getUsuarios),
-    path('usuarios/<int:id>/', getUsuarioById),
+    path('usuario/<int:id>/', getUsuarioById),
     path('usuarios/create/', createUsuario),
     path('usuarios/update/<int:id>/', updateUsuario),
     path('usuarios/delete/<int:id>/', deleteUsuario),
+    # Pedido URLs
+    path('pedidos/', getPedidos),
+    path('pedido/<int:id>/', getPedidoById),
+    path('pedidos/create/', createPedido),
+    path('pedidos/update/<int:id>/', updatePedido),
+    path('pedidos/delete/<int:id>/', deletePedido),
     #Incidencias URLs
     path('incidencias/', getIncidencias),
     path('incidencias/<int:id>/', getIncidenciaById),
@@ -29,5 +37,8 @@ urlpatterns = [
     path('producto_personalizado/create/', createProductoPersonalizado),
     path('producto_personalizado/update/<int:id>/', updateProductoPersonalizado),
     path('producto_personalizado/delete/<int:id>/', deleteProductoPersonalizado),
-
+    # Images URLs
+    path('images/user/<int:user_id>/', getImagesByUserId),
+    path('images/upload/', uploadImage),
+    path('images/delete/<int:image_id>/', deleteImage),
 ]
