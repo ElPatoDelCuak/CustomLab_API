@@ -154,7 +154,7 @@ class DjangoSession(models.Model):
 class ImagenesProductos(models.Model):
     id_imagen_producto = models.AutoField(primary_key=True)
     id_producto = models.ForeignKey('Productos', models.DO_NOTHING, db_column='id_producto')
-    ruta = models.CharField(max_length=100)
+    ruta = models.CharField(max_length=300)
 
     class Meta:
         managed = False
@@ -164,7 +164,7 @@ class ImagenesProductos(models.Model):
 class ImagenesUsuario(models.Model):
     id_imagen_usuario = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_usuario')
-    ruta = models.CharField(max_length=100)
+    ruta = models.CharField(max_length=300)
 
     class Meta:
         managed = False
