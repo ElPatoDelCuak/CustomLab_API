@@ -4,7 +4,7 @@ from .controllers.usuarioController import getUsuarios, getUsuarioById, createUs
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
-from .controllers.imagesController import getImagesByUserId, uploadImage, deleteImage
+from .controllers.userImagesController import getImagesByUserId, uploadImage, deleteImage
 
 urlpatterns = [
     #Productos URLs

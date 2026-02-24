@@ -1,49 +1,82 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
-
+from customlab_services.services.imagesService import ImagesService
 class ProductoService:
     @staticmethod
     def getProductos():
         productos = ProductoRepository.getProductos()
-        if productos:
+        if not productos:
             return {
-                'success': True,
-                'data': list(productos)
+                'success': False,
+                'message': 'No products found'
             }
+        for producto in productos:
+            producto['images'] = ProductoRepository.getProductImages(producto['id_producto'])
         return {
-            'success': False,
-            'message': 'No products found'
+            'success': True,
+            'data': productos
         }
 
     @staticmethod
     def getProductoById(idProducto):
         producto = ProductoRepository.getProductoById(idProducto)
-        if producto:
+        if not producto:
             return {
-                'success': True,
-                'data': producto
+                'success': False,
+                'message': 'Producto not found'
             }
+        producto['images'] = ProductoRepository.getProductImages(idProducto)
         return {
-            'success': False,
-            'message': 'Producto not found'
+            'success': True,
+            'data': producto
         }
 
     @staticmethod
-    def createProducto(data):
-        exist = ProductoRepository.getProductoById(data.get('id_producto'))
-        if exist:
+    def createProducto(data, images):
+        product_name = data.get('nombre_producto')
+        upload_type = data.get('upload_type')
+
+        if not images or not product_name or upload_type is None:
             return {
                 'success': False,
-                'message': 'El producto ya existe'
+                'message': 'Product name, images and upload type are required'
             }
-        success = ProductoRepository.createProducto(data)
-        if success:
+
+        upload_type = int(upload_type)
+
+        for image in images:
+            if not ImagesService.verifyImage(image):
+                return {
+                    'success': False,
+                    'message': 'Invalid image format'
+                }
+
+        saved_paths = []
+        for image in images:
+            image_path = ImagesService.saveImage(product_name, upload_type, image)
+            if not image_path:
+                for path in saved_paths:
+                    ImagesService.deleteImage(path)
+                return {
+                    'success': False,
+                    'message': 'Error saving image'
+                }
+            saved_paths.append(image_path)
+
+        producto = ProductoRepository.createProducto(data)
+        if not producto:
+            for path in saved_paths:
+                ImagesService.deleteImage(path)
             return {
-                'success': True,
-                'message': 'Producto creado exitosamente'
+                'success': False,
+                'message': 'Error al crear el producto'
             }
+
+        for path in saved_paths:
+            ProductoRepository.saveProductImages(producto.id_producto, path)
+
         return {
-            'success': False,
-            'message': 'Error al crear el producto'
+            'success': True,
+            'message': 'Producto creado exitosamente'
         }
     
     @staticmethod
@@ -73,6 +106,10 @@ class ProductoService:
                 'success': False,
                 'message': 'Producto no encontrado'
             }
+        images = ProductoRepository.getProductImages(idProducto)
+        for img in images:
+            ImagesService.deleteImage(img['ruta'])
+        ProductoRepository.deleteProductImages(idProducto)
         success = ProductoRepository.deleteProducto(idProducto)
         if success:
             return {
@@ -92,4 +129,3 @@ class ProductoService:
     @staticmethod
     def verificarStockProducto(idProducto, cantidad):
         pass
-    
