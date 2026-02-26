@@ -5,6 +5,8 @@ from .controllers.incidenciaController import getIncidencias, getIncidenciaById,
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
 from .controllers.userImagesController import getImagesByUserId, uploadImage, deleteImage
+from .controllers.tallaController import getTallas, getTallaById, createTalla, updateTalla, deleteTalla
+
 
 urlpatterns = [
     #Productos URLs
@@ -41,4 +43,10 @@ urlpatterns = [
     path('images/user/<int:user_id>/', getImagesByUserId),
     path('images/upload/', uploadImage),
     path('images/delete/<int:image_id>/', deleteImage),
+    # Tallas URLs
+    path('tallas/', getTallas),
+    path('talla/<int:id>/', getTallaById),
+    path('tallas/create/', createTalla),
+    path('tallas/update/<int:id>/', updateTalla),
+    path('tallas/delete/<int:id>/', deleteTalla),
 ]

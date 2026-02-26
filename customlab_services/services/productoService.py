@@ -31,7 +31,7 @@ class ProductoService:
         }
 
     @staticmethod
-    def createProducto(data, images):
+    def createProducto(data, images, tallas):
         product_name = data.get('nombre_producto')
         upload_type = data.get('upload_type')
 
