@@ -90,6 +90,8 @@ class Caracteristicas(models.Model):
     id_caracteristica = models.AutoField(primary_key=True)
     caracteristica = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.caracteristica
     class Meta:
         managed = False
         db_table = 'caracteristicas'
@@ -179,6 +181,9 @@ class Incidencias(models.Model):
     estado_incidencia = models.CharField()
     descripcion = models.TextField()
 
+    def __str__(self):
+        return f"Incidencia {self.id_incidencia} - Usuario {self.id_usuario_id} - Tipo: {self.tipo}"
+
     class Meta:
         managed = False
         db_table = 'incidencias'
@@ -192,6 +197,9 @@ class Pedidos(models.Model):
     fecha = models.DateTimeField()
     direccion = models.CharField()
     numero_piso = models.CharField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Pedido {self.id_pedido} - Usuario {self.id_usuario_id} - Total: {self.total}"
 
     class Meta:
         managed = False
@@ -207,6 +215,8 @@ class Productos(models.Model):
     categoria = models.CharField(max_length=100)
     personalizable = models.BooleanField()
 
+    def __str__(self):
+        return self.nombre_producto
     class Meta:
         managed = False
         db_table = 'productos'
@@ -247,6 +257,9 @@ class Tallas(models.Model):
     talla = models.CharField(max_length=45)
     stock = models.IntegerField()
 
+    def __str__(self):
+        return f"{self.talla} (Stock: {self.stock})"
+
     class Meta:
         managed = False
         db_table = 'tallas'
@@ -261,6 +274,9 @@ class Usuarios(models.Model):
     fecha_nacimiento = models.DateField(blank=True, null=True)
     doble_factor = models.BooleanField(blank=True, null=True)
     rol = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellidos}"
 
     class Meta:
         managed = False
