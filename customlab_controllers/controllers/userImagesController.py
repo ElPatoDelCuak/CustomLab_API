@@ -4,8 +4,12 @@ from customlab_services.services.usersImagesService import UserImagesService
 
 @api_view(['GET'])
 def getImagesByUserId(request, user_id):
-    images = UserImagesService.getImagesByUserId(user_id) 
+    images = UserImagesService.getImagesByUserId(user_id)
     if images['success']:
+        images['data'] = [
+            {**img, 'ruta': request.build_absolute_uri(img['ruta'])}
+            for img in images['data']
+        ]
         return Response(images, status=200)
     else:
         return Response(images, status=404)
