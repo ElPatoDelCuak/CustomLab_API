@@ -10,18 +10,25 @@ class TallaRepository:
         return tallas
 
     @staticmethod
+    def getTallasByProductoId(idProducto):
+        tallas = Tallas.objects.filter(id_producto=idProducto).values(
+            'id_talla','id_producto','talla','stock'
+        )
+        if not tallas.exists():
+            return False
+        return tallas
+
+    @staticmethod
     def getTallaById(idTalla):
         talla = Tallas.objects.filter(id_talla=idTalla).values(
             'id_talla','id_producto','talla','stock'
-        )
-        if not talla.exists():
-            return False
-        return talla
+        ).first()
+        return talla or None
 
     @staticmethod
     def createTalla(data):
         Tallas.objects.create(
-            id_producto=data.get('id_producto'),
+            id_producto_id=data.get('id_producto'),
             talla=data.get('talla'),
             stock=data.get('stock'),
         )

@@ -5,18 +5,18 @@ from customlab_services.services.tallaService import TallaService
 @api_view(['GET'])
 def getTallas(request):
     tallas = TallaService.getTallas()
-    if tallas ['success']:
+    if tallas['success']:
         return Response(tallas, status=200)
     else:
         return Response(tallas, status=404)
 
 @api_view(['GET'])
-def getTallaById(request, id):
-    talla = TallaService.getTallaById(id)
-    if talla ['success']:
-        return Response(talla, status=200)
+def getTallasByProductoId(request, producto_id):
+    tallas = TallaService.getTallasByProductoId(producto_id)
+    if tallas['success']:
+        return Response(tallas, status=200)
     else:
-        return Response(talla, status=404)
+        return Response(tallas, status=404)
 
 @api_view(['POST'])
 def createTalla(request):
