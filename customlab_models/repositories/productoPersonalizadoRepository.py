@@ -24,17 +24,17 @@ class ProductoPersonalizadoRepository:
         return producto
 
     @staticmethod
-    def createProductoPersonalizado(data):
+    def createProductoPersonalizado(data, ruta_imagen):
         idProducto = Productos.objects.get(id_producto=data.get('id_producto'))
         idTalla = Tallas.objects.get(id_talla=data.get('id_talla'))
         idImagenUsuario = ImagenesUsuario.objects.get(id_imagen_usuario=data.get('id_imagen_usuario'))
         ProductosPersonalizados.objects.create(
-            id_producto = idProducto,
-            id_talla = idTalla,
-            id_imagen_usuario = idImagenUsuario,
+            id_producto=idProducto,
+            id_talla=idTalla,
+            id_imagen_usuario=idImagenUsuario,
             color=data.get('color'),
             texto=data.get('texto'),
-            ruta_imagen=data.get('ruta_imagen'),
+            ruta_imagen=ruta_imagen,
             posicion_xy=data.get('posicion_xy'),
         )
         if ProductosPersonalizados.objects.exists():

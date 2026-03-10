@@ -1,5 +1,6 @@
 from customlab_models.repositories.productoPersonalizadoRepository import ProductoPersonalizadoRepository
-
+from customlab_services.services.productoService import ProductoService
+from customlab_services.services.imagesService import ImagesService
 class ProductoPersonalizadoService:
     @staticmethod
     def getProductosPersonalizados():
@@ -28,19 +29,47 @@ class ProductoPersonalizadoService:
         }
 
     @staticmethod
-    def createProductoPersonalizado(data):
-        exist = ProductoPersonalizadoRepository.getProductoPersonalizadoById(data.get('id_producto'))
-        if exist:
+    def createProductoPersonalizado(data, image):
+        id_producto = data.get('id_producto')
+
+        if not image or not id_producto:
             return {
                 'success': False,
-                'message': 'El producto ya existe'
+                'message': 'El producto y la imagen son requeridos'
             }
-        success = ProductoPersonalizadoRepository.createProductoPersonalizado(data)
+
+        exist_product = ProductoService.getProductoById(id_producto)
+        if not exist_product['success']:
+            return {
+                'success': False,
+                'message': 'El producto no existe'
+            }
+        if not exist_product['data'].get('personalizable'):
+            return {
+                'success': False,
+                'message': 'El producto no es personalizable'
+            }
+
+        if not ImagesService.verifyImage(image):
+            return {
+                'success': False,
+                'message': 'Formato de imagen no válido'
+            }
+
+        ruta_imagen = ImagesService.saveImage(id_producto, 2, image)
+        if not ruta_imagen:
+            return {
+                'success': False,
+                'message': 'Error al guardar la imagen'
+            }
+
+        success = ProductoPersonalizadoRepository.createProductoPersonalizado(data, ruta_imagen)
         if success:
             return {
                 'success': True,
                 'message': 'ProductoPersonalizado creado exitosamente'
             }
+        ImagesService.deleteImage(ruta_imagen)
         return {
             'success': False,
             'message': 'Error al crear el producto'

@@ -21,7 +21,8 @@ def getProductoPersonalizadoById(request, id):
 @api_view(['POST'])
 def createProductoPersonalizado(request):
     data = request.data
-    result = ProductoPersonalizadoService.createProductoPersonalizado(data)
+    image = request.FILES.get('image')
+    result = ProductoPersonalizadoService.createProductoPersonalizado(data, image)
     if result['success']:
         return Response(result, status=201)
     else:
