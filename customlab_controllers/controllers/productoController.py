@@ -6,6 +6,9 @@ from customlab_services.services.productoService import ProductoService
 def getProductos(request):
     productos = ProductoService.getProductos()
     if productos['success']:
+        for producto in productos['data']:
+            for img in producto.get('images', []):
+                img['ruta'] = request.build_absolute_uri(img['ruta'])
         return Response(productos, status=200)
     else:
         return Response(productos, status=404)
@@ -14,6 +17,8 @@ def getProductos(request):
 def getProductoById(request, id):
     producto = ProductoService.getProductoById(id)
     if producto['success']:
+        for img in producto['data'].get('images', []):
+            img['ruta'] = request.build_absolute_uri(img['ruta'])
         return Response(producto, status=200)
     else:
         return Response(producto, status=404)
