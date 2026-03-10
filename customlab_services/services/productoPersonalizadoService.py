@@ -102,6 +102,7 @@ class ProductoPersonalizadoService:
                 'success': False,
                 'message': 'ProductoPersonalizado no encontrado'
             }
+        ImagesService.deleteImage(exist['ruta_imagen'])
         success = ProductoPersonalizadoRepository.deleteProductoPersonalizado(idProductoPersonalizado)
         if success:
             return {

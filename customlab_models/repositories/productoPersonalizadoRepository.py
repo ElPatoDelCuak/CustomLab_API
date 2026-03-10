@@ -16,12 +16,11 @@ class ProductoPersonalizadoRepository:
 
     @staticmethod
     def getProductoPersonalizadoById(idProductoPersonalizado):
-        producto =  ProductosPersonalizados.objects.filter(id_producto_personalizado=idProductoPersonalizado).values(
+        producto = ProductosPersonalizados.objects.filter(id_producto_personalizado=idProductoPersonalizado).values(
             'id_producto_personalizado', 'id_producto', 'id_talla', 'id_imagen_usuario', 'color',
-            'texto', 'ruta_imagen', 'posicion_xy'        )
-        if not producto.exists():
-            return False
-        return producto
+            'texto', 'ruta_imagen', 'posicion_xy'
+        ).first()
+        return producto or None
 
     @staticmethod
     def createProductoPersonalizado(data, ruta_imagen):
