@@ -85,19 +85,63 @@ class ProductoPersonalizadoService:
         }
     
     @staticmethod
-    def updateProductoPersonalizado(idProductoPersonalizado, data):
+    def updateProductoPersonalizado(idProductoPersonalizado, data, image=None):
         exist = ProductoPersonalizadoRepository.getProductoPersonalizadoById(idProductoPersonalizado)
         if not exist:
             return {
                 'success': False,
                 'message': 'ProductoPersonalizado no encontrado'
             }
+        id_producto = data.get('id_producto')
+        exist_product = ProductoService.getProductoById(id_producto)
+        if not exist_product['success']:
+            return {
+                'success': False,
+                'message': 'El producto no existe'
+            }
+        if not exist_product['data'].get('personalizable'):
+            return {
+                'success': False,
+                'message': 'El producto no es personalizable'
+            }
+        exist_talla = TallaService.getTallaById(data.get('id_talla'))
+        if not exist_talla['success']:
+            return {
+                'success': False,
+                'message': 'La talla no existe'
+            }
+        talla_is_from_product = exist_talla['data']['id_producto'] == id_producto
+        if not talla_is_from_product:
+            return {
+                'success': False,
+                'message': 'La talla no pertenece al producto'
+            }
+        ruta_imagen_antigua = exist['ruta_imagen']
+        if image:
+            if not ImagesService.verifyImage(image):
+                return {
+                    'success': False,
+                    'message': 'Formato de imagen no válido'
+                }
+            nueva_ruta = ImagesService.saveImage(id_producto, 2, image)
+            if not nueva_ruta:
+                return {
+                    'success': False,
+                    'message': 'Error al guardar la imagen'
+                }
+            data['ruta_imagen'] = nueva_ruta
+        else:
+            data['ruta_imagen'] = ruta_imagen_antigua
         success = ProductoPersonalizadoRepository.updateProductoPersonalizado(idProductoPersonalizado, data)
         if success:
+            if image:
+                ImagesService.deleteImage(ruta_imagen_antigua)
             return {
                 'success': True,
                 'message': 'ProductoPersonalizado actualizado exitosamente'
             }
+        if image:
+            ImagesService.deleteImage(data['ruta_imagen'])
         return {
             'success': False,
             'message': 'Error al actualizar el producto'
