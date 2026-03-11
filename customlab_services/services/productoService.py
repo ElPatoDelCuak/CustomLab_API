@@ -1,5 +1,6 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
 from customlab_services.services.imagesService import ImagesService
+from customlab_services.services.tallaService import TallaService
 class ProductoService:
     @staticmethod
     def getProductos():
@@ -11,6 +12,7 @@ class ProductoService:
             }
         for producto in productos:
             producto['images'] = ProductoRepository.getProductImages(producto['id_producto'])
+            producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
         return {
             'success': True,
             'data': productos
@@ -25,6 +27,7 @@ class ProductoService:
                 'message': 'Producto not found'
             }
         producto['images'] = ProductoRepository.getProductImages(idProducto)
+        producto['tallas'] = TallaService.getTallasByProductoId(idProducto)['data']
         return {
             'success': True,
             'data': producto
