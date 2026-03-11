@@ -7,6 +7,13 @@ class TallaService:
         if not tallas:
             return {'success': False, 'message': 'No sizes found'}
         return {'success': True, 'data': list(tallas)}
+    
+    @staticmethod
+    def getTallaById(idTalla):
+        talla = TallaRepository.getTallaById(idTalla)
+        if not talla:
+            return {'success': False, 'message': 'Size not found'}
+        return {'success': True, 'data': talla}
 
     @staticmethod
     def getTallasByProductoId(idProducto):

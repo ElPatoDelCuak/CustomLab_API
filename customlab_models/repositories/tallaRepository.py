@@ -10,6 +10,15 @@ class TallaRepository:
         return tallas
 
     @staticmethod
+    def getTallaById(idTalla):
+        talla = Tallas.objects.filter(id_talla=idTalla).values(
+            'id_talla','id_producto','talla','stock'
+        ).first()
+        if not talla.exists():
+            return False
+        return talla
+    
+    @staticmethod
     def getTallasByProductoId(idProducto):
         tallas = Tallas.objects.filter(id_producto=idProducto).values(
             'id_talla','id_producto','talla','stock'

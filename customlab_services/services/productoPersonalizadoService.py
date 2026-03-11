@@ -1,6 +1,7 @@
 from customlab_models.repositories.productoPersonalizadoRepository import ProductoPersonalizadoRepository
 from customlab_services.services.productoService import ProductoService
 from customlab_services.services.imagesService import ImagesService
+from customlab_services.services.tallaService import TallaService
 class ProductoPersonalizadoService:
     @staticmethod
     def getProductosPersonalizados():
@@ -37,7 +38,6 @@ class ProductoPersonalizadoService:
                 'success': False,
                 'message': 'El producto y la imagen son requeridos'
             }
-
         exist_product = ProductoService.getProductoById(id_producto)
         if not exist_product['success']:
             return {
@@ -49,20 +49,29 @@ class ProductoPersonalizadoService:
                 'success': False,
                 'message': 'El producto no es personalizable'
             }
-
+        exist_talla = TallaService.getTallaById(data.get('id_talla'))
+        if not exist_talla['success']:
+            return {
+                'success': False,
+                'message': 'La talla no existe'
+            }
+        talla_is_from_product = exist_talla['data']['id_producto'] == id_producto
+        if not talla_is_from_product:
+            return {
+                'success': False,
+                'message': 'La talla no pertenece al producto'
+            }
         if not ImagesService.verifyImage(image):
             return {
                 'success': False,
                 'message': 'Formato de imagen no válido'
             }
-
         ruta_imagen = ImagesService.saveImage(id_producto, 2, image)
         if not ruta_imagen:
             return {
                 'success': False,
                 'message': 'Error al guardar la imagen'
             }
-
         success = ProductoPersonalizadoRepository.createProductoPersonalizado(data, ruta_imagen)
         if success:
             return {
