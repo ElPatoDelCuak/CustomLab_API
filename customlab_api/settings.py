@@ -67,6 +67,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://customlab-ui.vercel.app",    # frontend producción (Vercel)
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 ROOT_URLCONF = 'customlab_api.urls'
 
 TEMPLATES = [
