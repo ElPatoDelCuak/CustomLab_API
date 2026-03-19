@@ -23,6 +23,17 @@ def getProductoById(request, id):
     else:
         return Response(producto, status=404)
 
+@api_view(['GET'])
+def getFeaturedProducts(request):
+    productos = ProductoService.getFeaturedProducts()
+    if productos['success']:
+        for producto in productos['data']:
+            for img in producto.get('images', []):
+                img['ruta'] = request.build_absolute_uri(img['ruta'])
+        return Response(productos, status=200)
+    else:
+        return Response(productos, status=404)
+
 @api_view(['POST'])
 def createProducto(request):
     data = request.data

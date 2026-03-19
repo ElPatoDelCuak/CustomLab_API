@@ -1,5 +1,5 @@
 from django.urls import path
-from .controllers.productoController import getProductos, getProductoById, createProducto, updateProducto, deleteProducto
+from .controllers.productoController import getFeaturedProducts, getProductos, getProductoById, createProducto, updateProducto, deleteProducto
 from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
@@ -12,6 +12,7 @@ urlpatterns = [
     #Productos URLs
     path('productos/', getProductos),
     path('productos/<int:id>/', getProductoById),
+    path('productos/featured/', getFeaturedProducts),
     path('productos/create/', createProducto),
     path('productos/update/<int:id>/', updateProducto),
     path('productos/delete/<int:id>/', deleteProducto),

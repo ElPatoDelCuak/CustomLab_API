@@ -1,6 +1,7 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
 from customlab_services.services.imagesService import ImagesService
 from customlab_services.services.tallaService import TallaService
+import random
 class ProductoService:
     @staticmethod
     def getProductos():
@@ -41,6 +42,40 @@ class ProductoService:
         return {
             'success': True,
             'data': producto
+        }
+    
+    @staticmethod
+    def getFeaturedProducts():
+        productos = ProductoRepository.getProductos()
+        if not productos:
+            return {
+                'success': False,
+                'message': 'No products found'
+            }
+        featured = [p for p in productos if p['nuevo'] or p['oferta'] or p['personalizable']]
+        if not featured:
+            return {
+            'success': False,
+            'message': 'No featured products found'
+            }
+        if len(featured) > 3:
+            featured = random.sample(featured, 3)
+        for producto in featured:
+            producto['images'] = ProductoRepository.getProductImages(producto['id_producto'])
+            producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
+            if not producto['images']:
+                return {
+                    'success': False,
+                    'message': 'Error retrieving product images'
+                }
+            if not producto['tallas']:
+                return {
+                    'success': False,
+                    'message': 'Error retrieving product sizes'
+                }
+        return {
+            'success': True,
+            'data': featured
         }
 
     @staticmethod

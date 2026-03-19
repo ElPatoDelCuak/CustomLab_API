@@ -5,8 +5,8 @@ class ProductoRepository:
     @staticmethod
     def getProductos():
         productos = Productos.objects.all().order_by('id_producto').values(
-            'id_producto', 'nombre_producto', 'precio_venta', 'precio_costo',
-            'stock', 'categoria', 'personalizable'
+            'id_producto', 'nombre_producto', 'precio_venta', 'precio_original', 'precio_costo',
+            'stock', 'categoria', 'personalizable', 'nuevo', 'oferta'
         )
         if not productos.exists():
             return False
@@ -15,8 +15,8 @@ class ProductoRepository:
     @staticmethod
     def getProductoById(idProducto):
         producto = Productos.objects.filter(id_producto=idProducto).values(
-            'id_producto', 'nombre_producto', 'precio_venta', 'precio_costo',
-            'stock', 'categoria', 'personalizable'
+            'id_producto', 'nombre_producto', 'precio_venta', 'precio_original', 'precio_costo',
+            'stock', 'categoria', 'personalizable', 'nuevo', 'oferta'
         ).first()
         return producto or None
 
@@ -38,10 +38,13 @@ class ProductoRepository:
             producto = Productos.objects.create(
                 nombre_producto=data.get('nombre_producto'),
                 precio_venta=data.get('precio_venta'),
+                precio_original=data.get('precio_original'),
                 precio_costo=data.get('precio_costo'),
                 stock=data.get('stock'),
                 categoria=data.get('categoria'),
                 personalizable=data.get('personalizable'),
+                nuevo=data.get('nuevo'),
+                oferta=data.get('oferta'),
             )
             return producto
         except Exception:
@@ -63,10 +66,13 @@ class ProductoRepository:
         Productos.objects.filter(id_producto=idProducto).update(
             nombre_producto=data.get('nombre_producto'),
             precio_venta=data.get('precio_venta'),
+            precio_original=data.get('precio_original'),
             precio_costo=data.get('precio_costo'),
             stock=data.get('stock'),
             categoria=data.get('categoria'),
             personalizable=data.get('personalizable'),
+            nuevo=data.get('nuevo'),
+            oferta=data.get('oferta'),
         )
         if Productos.objects.filter(id_producto=idProducto).exists():
             return True

@@ -202,10 +202,13 @@ class Productos(models.Model):
     id_producto = models.AutoField(primary_key=True)
     nombre_producto = models.CharField(max_length=150)
     precio_venta = models.DecimalField(max_digits=10, decimal_places=2)
+    precio_original = models.DecimalField(max_digits=10, decimal_places=2)
     precio_costo = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
     categoria = models.CharField(max_length=100)
     personalizable = models.BooleanField()
+    nuevo = models.BooleanField()
+    oferta = models.BooleanField()
 
     class Meta:
         managed = False
