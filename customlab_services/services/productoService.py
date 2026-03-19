@@ -1,4 +1,5 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
+from customlab_models.repositories.productImagesRepository import ProductImagesRepository
 from customlab_services.services.imagesService import ImagesService
 from customlab_services.services.tallaService import TallaService
 import random
@@ -12,7 +13,7 @@ class ProductoService:
                 'message': 'No products found'
             }
         for producto in productos:
-            producto['images'] = ProductoRepository.getProductImages(producto['id_producto'])
+            producto['images'] = ProductImagesRepository.getProductImagesByProductId(producto['id_producto'])
             producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
             if not producto['images']:
                 return {
@@ -37,7 +38,7 @@ class ProductoService:
                 'success': False,
                 'message': 'Producto not found'
             }
-        producto['images'] = ProductoRepository.getProductImages(idProducto)
+        producto['images'] = ProductImagesRepository.getProductImagesByProductId(idProducto)
         producto['tallas'] = TallaService.getTallasByProductoId(idProducto)['data']
         return {
             'success': True,
@@ -61,7 +62,7 @@ class ProductoService:
         if len(featured) > 3:
             featured = random.sample(featured, 3)
         for producto in featured:
-            producto['images'] = ProductoRepository.getProductImages(producto['id_producto'])
+            producto['images'] = ProductImagesRepository.getProductImagesByProductId(producto['id_producto'])
             producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
             if not producto['images']:
                 return {
@@ -119,11 +120,11 @@ class ProductoService:
             saved_paths.append(image_path)
 
         for path in saved_paths:
-            saved = ProductoRepository.saveProductImages(producto.id_producto, path)
+            saved = ProductImagesRepository.saveProductImages(producto.id_producto, path)
             if not saved:
                 for image_path in saved_paths:
                     ImagesService.deleteImage(image_path)
-                ProductoRepository.deleteProductImages(producto.id_producto)
+                ProductImagesRepository.deleteProductImages(producto.id_producto)
                 ProductoRepository.deleteProducto(producto.id_producto)
                 return {
                     'success': False,
@@ -162,10 +163,10 @@ class ProductoService:
                 'success': False,
                 'message': 'Producto no encontrado'
             }
-        images = ProductoRepository.getProductImages(idProducto)
+        images = ProductImagesRepository.getProductImagesByProductId(idProducto)
         for img in images:
             ImagesService.deleteImage(img['ruta'])
-        ProductoRepository.deleteProductImages(idProducto)
+        ProductImagesRepository.deleteProductImages(idProducto)
         success = ProductoRepository.deleteProducto(idProducto)
         if success:
             return {

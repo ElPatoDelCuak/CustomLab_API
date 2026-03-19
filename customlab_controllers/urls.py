@@ -1,10 +1,12 @@
 from django.urls import path
+
 from .controllers.productoController import getFeaturedProducts, getProductos, getProductoById, createProducto, updateProducto, deleteProducto
 from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
 from .controllers.userImagesController import getImagesByUserId, uploadImage, deleteImage
+from .controllers.productImagesController import getProductImagesByProductId, deleteProductImage, uploadProductImage
 from .controllers.tallaController import getTallas, getTallasByProductoId, createTalla, updateTalla, deleteTalla
 
 
@@ -44,6 +46,10 @@ urlpatterns = [
     path('images/user/<int:user_id>/', getImagesByUserId),
     path('images/upload/', uploadImage),
     path('images/delete/<int:image_id>/', deleteImage),
+    # Product Images URLs
+    path('images/product/<int:product_id>/', getProductImagesByProductId),
+    path('images/product/<int:product_id>/create/', uploadProductImage),
+    path('images/product/<int:product_id>/delete/', deleteProductImage),
     # Tallas URLs
     path('tallas/', getTallas),
     path('tallas/producto/<int:producto_id>/', getTallasByProductoId),

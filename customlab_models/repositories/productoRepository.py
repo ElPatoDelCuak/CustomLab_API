@@ -21,18 +21,6 @@ class ProductoRepository:
         return producto or None
 
     @staticmethod
-    def getProductImages(idProducto):
-        return list(
-            ImagenesProductos.objects.filter(id_producto_id=idProducto)
-            .values('id_imagen_producto', 'ruta')
-        )
-
-    @staticmethod
-    def deleteProductImages(idProducto):
-        ImagenesProductos.objects.filter(id_producto_id=idProducto).delete()
-        return True
-    
-    @staticmethod
     def createProducto(data):
         try:
             producto = Productos.objects.create(
