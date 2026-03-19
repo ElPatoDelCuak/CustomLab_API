@@ -22,7 +22,10 @@ class ImagesService:
         os.makedirs(target_dir, exist_ok=True)
 
         timestamp = int(time.time())
-        image_name = f'{id}_{image.name}_{timestamp}.jpg'
+        original_name = os.path.basename(image.name)
+        base_name, extension = os.path.splitext(original_name)
+        extension = extension.lower() if extension else '.jpg'
+        image_name = f'{id}_{base_name}_{timestamp}{extension}'
         image_path = os.path.join(target_dir, image_name)
 
         with open(image_path, 'wb+') as f:
@@ -47,6 +50,6 @@ class ImagesService:
     
     @staticmethod
     def verifyImage(image):
-        allowed_extensions = ['jpg', 'jpeg', 'png']
-        extension = image.name.split('.')[-1].lower()
-        return extension in allowed_extensions
+        allowed_extensions = ['.jpg', '.jpeg', '.png']
+        _, extension = os.path.splitext(image.name)
+        return extension.lower() in allowed_extensions

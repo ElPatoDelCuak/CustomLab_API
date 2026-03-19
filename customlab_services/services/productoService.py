@@ -13,6 +13,16 @@ class ProductoService:
         for producto in productos:
             producto['images'] = ProductoRepository.getProductImages(producto['id_producto'])
             producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
+            if not producto['images']:
+                return {
+                    'success': False,
+                    'message': 'Error retrieving product images'
+                }
+            if not producto['tallas']:
+                return {
+                    'success': False,
+                    'message': 'Error retrieving product sizes'
+                }
         return {
             'success': True,
             'data': productos
@@ -36,15 +46,15 @@ class ProductoService:
     @staticmethod
     def createProducto(data, images):
         product_name = data.get('nombre_producto')
-        upload_type = data.get('upload_type')
 
-        if not images or not product_name or upload_type is None:
+        if not images or not product_name:
             return {
                 'success': False,
-                'message': 'Product name, images and upload type are required'
+                'message': 'Product name and images are required'
             }
 
-        upload_type = int(upload_type)
+        # Product images always go to products folder.
+        upload_type = 3
 
         for image in images:
             if not ImagesService.verifyImage(image):
@@ -53,29 +63,37 @@ class ProductoService:
                     'message': 'Invalid image format'
                 }
 
+        producto = ProductoRepository.createProducto(data)
+        if not producto:
+            return {
+                'success': False,
+                'message': 'Error al crear el producto'
+            }
+
         saved_paths = []
         for image in images:
-            image_path = ImagesService.saveImage(product_name, upload_type, image)
+            image_path = ImagesService.saveImage(producto.id_producto, upload_type, image)
             if not image_path:
                 for path in saved_paths:
                     ImagesService.deleteImage(path)
+                ProductoRepository.deleteProducto(producto.id_producto)
                 return {
                     'success': False,
                     'message': 'Error saving image'
                 }
             saved_paths.append(image_path)
 
-        producto = ProductoRepository.createProducto(data)
-        if not producto:
-            for path in saved_paths:
-                ImagesService.deleteImage(path)
-            return {
-                'success': False,
-                'message': 'Error al crear el producto'
-            }
-
         for path in saved_paths:
-            ProductoRepository.saveProductImages(producto.id_producto, path)
+            saved = ProductoRepository.saveProductImages(producto.id_producto, path)
+            if not saved:
+                for image_path in saved_paths:
+                    ImagesService.deleteImage(image_path)
+                ProductoRepository.deleteProductImages(producto.id_producto)
+                ProductoRepository.deleteProducto(producto.id_producto)
+                return {
+                    'success': False,
+                    'message': 'Error saving image metadata'
+                }
 
         return {
             'success': True,
