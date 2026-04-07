@@ -1,7 +1,8 @@
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 from .controllers.productoController import getFeaturedProducts, getProductos, getProductoById, createProducto, updateProducto, deleteProducto
-from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario
+from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario, loginUsuario
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
@@ -22,6 +23,9 @@ urlpatterns = [
     path('usuarios/', getUsuarios),
     path('usuario/<int:id>/', getUsuarioById),
     path('usuarios/create/', createUsuario),
+    path('login/', loginUsuario),
+    path('login/refresh/', TokenRefreshView.as_view()),
+    path('login/verify/', TokenVerifyView.as_view()),
     path('usuarios/update/<int:id>/', updateUsuario),
     path('usuarios/delete/<int:id>/', deleteUsuario),
     # Pedido URLs

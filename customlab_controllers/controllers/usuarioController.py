@@ -27,6 +27,16 @@ def createUsuario(request):
     else:
         return Response(result, status=400)
 
+@api_view(['POST'])
+def loginUsuario(request):
+    data = request.data
+    result = UsuarioService.verifyUsuario(data)
+    if result['success']:
+        return Response(result, status=200)
+    if result.get('message') == 'Email y password son obligatorios':
+        return Response(result, status=400)
+    return Response(result, status=401)
+
 @api_view(['PUT'])
 def updateUsuario(request, id):
     data = request.data

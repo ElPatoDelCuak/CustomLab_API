@@ -1,6 +1,28 @@
 from customlab_models.repositories.usuarioRepository import UsuarioRepository
+from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class UsuarioService:
+    @staticmethod
+    def _normalize_email(email):
+        if email is None:
+            return None
+        return str(email).strip().lower()
+
+    @staticmethod
+    def _validate_and_hash_password(password):
+        if password is None:
+            raise ValidationError('La password es obligatoria')
+
+        plain_password = str(password).strip()
+        if not plain_password:
+            raise ValidationError('La password no puede estar vacia')
+
+        validate_password(plain_password)
+        return make_password(plain_password)
+
     @staticmethod
     def getUsuarios():
         usuarios = UsuarioRepository.getUsuarios()
@@ -29,7 +51,24 @@ class UsuarioService:
     
     @staticmethod
     def createUsuario(data):
-        success = UsuarioRepository.createUsuario(data)
+        payload = dict(data)
+        payload['email'] = UsuarioService._normalize_email(payload.get('email'))
+
+        if not payload.get('email'):
+            return {
+                'success': False,
+                'message': 'El email es obligatorio'
+            }
+
+        try:
+            payload['password'] = UsuarioService._validate_and_hash_password(payload.get('password'))
+        except ValidationError as exc:
+            return {
+                'success': False,
+                'message': '; '.join(exc.messages)
+            }
+
+        success = UsuarioRepository.createUsuario(payload)
         if success:
             return {
                 'success': True,
@@ -42,7 +81,24 @@ class UsuarioService:
     
     @staticmethod
     def updateUsuario(idUsuario, data):
-        success = UsuarioRepository.updateUsuario(idUsuario, data)
+        payload = dict(data)
+        payload['email'] = UsuarioService._normalize_email(payload.get('email'))
+
+        if not payload.get('email'):
+            return {
+                'success': False,
+                'message': 'El email es obligatorio'
+            }
+
+        try:
+            payload['password'] = UsuarioService._validate_and_hash_password(payload.get('password'))
+        except ValidationError as exc:
+            return {
+                'success': False,
+                'message': '; '.join(exc.messages)
+            }
+
+        success = UsuarioRepository.updateUsuario(idUsuario, payload)
         if success:
             return {
                 'success': True,
@@ -70,7 +126,53 @@ class UsuarioService:
         }
     @staticmethod
     def verifyUsuario(data):
-        pass
+        email = UsuarioService._normalize_email(data.get('email'))
+        password = data.get('password')
+
+        if not email or not password:
+            return {
+                'success': False,
+                'message': 'Email y password son obligatorios'
+            }
+
+        usuario = UsuarioRepository.getUsuarioByEmail(email)
+        if not usuario:
+            return {
+                'success': False,
+                'message': 'Credenciales invalidas'
+            }
+
+        stored_password = usuario.get('password')
+        valid_password = check_password(str(password), stored_password)
+        if not valid_password:
+            return {
+                'success': False,
+                'message': 'Credenciales invalidas'
+            }
+
+        refresh = RefreshToken()
+        refresh['id_usuario'] = usuario['id_usuario']
+        refresh['email'] = usuario['email']
+        refresh['rol'] = usuario['rol']
+
+        return {
+            'success': True,
+            'message': 'Login exitoso',
+            'data': {
+                'usuario': {
+                    'id_usuario': usuario['id_usuario'],
+                    'nombre': usuario['nombre'],
+                    'apellidos': usuario['apellidos'],
+                    'email': usuario['email'],
+                    'rol': usuario['rol'],
+                    'doble_factor': usuario['doble_factor'],
+                },
+                'tokens': {
+                    'access': str(refresh.access_token),
+                    'refresh': str(refresh),
+                }
+            }
+        }
     @staticmethod
     def verifyUpdateUsuario(data):
         pass
