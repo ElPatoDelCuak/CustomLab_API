@@ -6,24 +6,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class UsuarioService:
     @staticmethod
-    def _normalize_email(email):
-        if email is None:
-            return None
-        return str(email).strip().lower()
-
-    @staticmethod
-    def _validate_and_hash_password(password):
-        if password is None:
-            raise ValidationError('La password es obligatoria')
-
-        plain_password = str(password).strip()
-        if not plain_password:
-            raise ValidationError('La password no puede estar vacia')
-
-        validate_password(plain_password)
-        return make_password(plain_password)
-
-    @staticmethod
     def getUsuarios():
         usuarios = UsuarioRepository.getUsuarios()
         if usuarios:
@@ -52,7 +34,7 @@ class UsuarioService:
     @staticmethod
     def createUsuario(data):
         payload = dict(data)
-        payload['email'] = UsuarioService._normalize_email(payload.get('email'))
+        payload['email'] = UsuarioService.normalize_email(payload.get('email'))
 
         if not payload.get('email'):
             return {
@@ -61,7 +43,7 @@ class UsuarioService:
             }
 
         try:
-            payload['password'] = UsuarioService._validate_and_hash_password(payload.get('password'))
+            payload['password'] = UsuarioService.validate_and_hash_password(payload.get('password'))
         except ValidationError as exc:
             return {
                 'success': False,
@@ -82,7 +64,7 @@ class UsuarioService:
     @staticmethod
     def updateUsuario(idUsuario, data):
         payload = dict(data)
-        payload['email'] = UsuarioService._normalize_email(payload.get('email'))
+        payload['email'] = UsuarioService.normalize_email(payload.get('email'))
 
         if not payload.get('email'):
             return {
@@ -91,7 +73,7 @@ class UsuarioService:
             }
 
         try:
-            payload['password'] = UsuarioService._validate_and_hash_password(payload.get('password'))
+            payload['password'] = UsuarioService.validate_and_hash_password(payload.get('password'))
         except ValidationError as exc:
             return {
                 'success': False,
@@ -124,9 +106,28 @@ class UsuarioService:
             'success': False,
             'message': 'Error al eliminar el usuario'
         }
+        
+    @staticmethod
+    def normalize_email(email):
+        if email is None:
+            return None
+        return str(email).strip().lower()
+
+    @staticmethod
+    def validate_and_hash_password(password):
+        if password is None:
+            raise ValidationError('La password es obligatoria')
+
+        plain_password = str(password).strip()
+        if not plain_password:
+            raise ValidationError('La password no puede estar vacia')
+
+        validate_password(plain_password)
+        return make_password(plain_password)
+
     @staticmethod
     def verifyUsuario(data):
-        email = UsuarioService._normalize_email(data.get('email'))
+        email = UsuarioService.normalize_email(data.get('email'))
         password = data.get('password')
 
         if not email or not password:
@@ -173,7 +174,4 @@ class UsuarioService:
                 }
             }
         }
-    @staticmethod
-    def verifyUpdateUsuario(data):
-        pass
     

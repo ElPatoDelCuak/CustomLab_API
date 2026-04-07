@@ -21,14 +21,7 @@ class UsuarioRepository:
     @staticmethod
     def getUsuarioByEmail(email):
         return Usuarios.objects.filter(email__iexact=email).values(
-            'id_usuario',
-            'nombre',
-            'apellidos',
-            'email',
-            'password',
-            'fecha_nacimiento',
-            'doble_factor',
-            'rol'
+            'id_usuario','nombre','apellidos','email','password','fecha_nacimiento','doble_factor','rol'
         ).first()
 
     @staticmethod
