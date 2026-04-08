@@ -49,6 +49,13 @@ class UsuarioService:
                 'success': False,
                 'message': '; '.join(exc.messages)
             }
+        
+        email_duplicated = UsuarioRepository.getUsuarioByEmail(payload['email'])
+        if email_duplicated:
+            return {
+                'success': False,
+                'message': 'El email ya esta registrado'
+            }
 
         success = UsuarioRepository.createUsuario(payload)
         if success:
@@ -70,6 +77,13 @@ class UsuarioService:
             return {
                 'success': False,
                 'message': 'El email es obligatorio'
+            }
+        
+        email_duplicated = UsuarioRepository.getUsuarioByEmail(payload['email'])
+        if email_duplicated:
+            return {
+                'success': False,
+                'message': 'El email ya esta registrado'
             }
 
         try:
