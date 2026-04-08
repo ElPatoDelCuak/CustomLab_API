@@ -35,6 +35,7 @@ class UsuarioService:
     def createUsuario(data):
         payload = dict(data)
         payload['email'] = UsuarioService.normalize_email(payload.get('email'))
+        payload['rol'] = payload.get('rol', 'cliente')
 
         if not payload.get('email'):
             return {
