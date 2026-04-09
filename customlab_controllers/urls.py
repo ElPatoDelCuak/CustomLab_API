@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
+from customlab_controllers.controllers.caracteristicaController import addCaracteristicaToProducto, createCaracteristica, deleteCaracteristica, getCaracteristicas
+
 from .controllers.productoController import getFeaturedProducts, getProductos, getProductoById, createProducto, updateProducto, deleteProducto
 from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario, loginUsuario
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
@@ -60,4 +62,9 @@ urlpatterns = [
     path('tallas/create/', createTalla),
     path('tallas/update/<int:id>/', updateTalla),
     path('tallas/delete/<int:id>/', deleteTalla),
+    # Caracteristicas URLs
+    path('caracteristicas/', getCaracteristicas),
+    path('caracteristicas/create/', createCaracteristica),
+    path('caracteristicas/delete/<int:id>/', deleteCaracteristica),
+    path('caracteristicas/add_to_producto/', addCaracteristicaToProducto),
 ]
