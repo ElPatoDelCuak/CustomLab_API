@@ -37,6 +37,20 @@ class CaracteristicaRepository:
         return False
     
     @staticmethod
+    def getCaracteristicasByProducto(id_producto):
+        caracteristicas = CaracteristicaProducto.objects.filter(id_producto_id=id_producto).select_related('id_caracteristica').values(
+            'id_caracteristica'
+        )
+        for caracteristica in caracteristicas:
+            caracteristica_info = Caracteristicas.objects.filter(id_caracteristica=caracteristica['id_caracteristica']).values(
+                'id_caracteristica', 'caracteristica'
+            ).first()
+            caracteristica['caracteristica'] = caracteristica_info['caracteristica']
+        if caracteristicas.exists():
+            return list(caracteristicas)
+        return False
+    
+    @staticmethod
     def addCaracteristicaToProducto(id_producto, id_caracteristica):
         CaracteristicaProducto.objects.create(
             id_producto_id=id_producto,

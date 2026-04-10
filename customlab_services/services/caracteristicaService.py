@@ -65,6 +65,25 @@ class CaracteristicaService:
         }
     
     @staticmethod
+    def getCaracteristicasByProducto(id_producto):
+        existProducto = ProductoService.getProductoById(id_producto)
+        if not existProducto['success']:
+            return {
+                'success': False,
+                'message': 'Producto no encontrado'
+            }
+        caracteristicas = CaracteristicaRepository.getCaracteristicasByProducto(id_producto)
+        if not caracteristicas:
+            return {
+                'success': False,
+                'message': 'No se encontraron características para este producto'
+            }
+        return {
+            'success': True,
+            'data': caracteristicas
+        }
+    
+    @staticmethod
     def addCaracteristicaToProducto(id_producto, id_caracteristica):
         try:
             id_producto = int(id_producto)

@@ -10,7 +10,7 @@ from .controllers.pedidoController import getPedidos, getPedidoById, createPedid
 from .controllers.userImagesController import getImagesByUserId, uploadImage, deleteImage
 from .controllers.productImagesController import getProductImagesByProductId, deleteProductImage, uploadProductImage
 from .controllers.tallaController import getTallas, getTallasByProductoId, createTalla, updateTalla, deleteTalla
-from customlab_controllers.controllers.caracteristicaController import addCaracteristicaToProducto, createCaracteristica, deleteCaracteristica, getCaracteristicas, removeCaracteristicaFromProducto
+from customlab_controllers.controllers.caracteristicaController import addCaracteristicaToProducto, createCaracteristica, deleteCaracteristica, getCaracteristicas, getCaracteristicasByProducto, removeCaracteristicaFromProducto
 
 
 urlpatterns = [
@@ -66,6 +66,7 @@ urlpatterns = [
     path('caracteristicas/', getCaracteristicas),
     path('caracteristicas/create/', createCaracteristica),
     path('caracteristicas/delete/<int:id>/', deleteCaracteristica),
+    path('caracteristicas/producto/<int:id_producto>/', getCaracteristicasByProducto),
     path('caracteristicas/add_to_producto/', addCaracteristicaToProducto),
     path('caracteristicas/remove_from_producto/', removeCaracteristicaFromProducto),
 ]

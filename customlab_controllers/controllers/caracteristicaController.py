@@ -27,6 +27,14 @@ def deleteCaracteristica(request, id):
         return Response(result, status=200)
     else:
         return Response(result, status=404)
+    
+@api_view(['GET'])
+def getCaracteristicasByProducto(request, id_producto):
+    caracteristicas = CaracteristicaService.getCaracteristicasByProducto(id_producto)
+    if caracteristicas['success']:
+        return Response(caracteristicas, status=200)
+    else:
+        return Response(caracteristicas, status=404)
 
 @api_view(['POST'])
 def addCaracteristicaToProducto(request):

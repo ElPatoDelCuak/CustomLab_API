@@ -82,16 +82,11 @@ class CaracteristicaProducto(models.Model):
                                           db_column='id_caracteristica')
     id_producto = models.ForeignKey('Productos', models.DO_NOTHING, 
                                     db_column='id_producto')
+    pk = models.CompositePrimaryKey('id_caracteristica', 'id_producto')
 
     class Meta:
         managed = False
         db_table = 'caracteristica_producto'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['id_caracteristica', 'id_producto'],
-                name='caracteristica_producto_unique'
-            )
-        ]
 
 
 class Caracteristicas(models.Model):
