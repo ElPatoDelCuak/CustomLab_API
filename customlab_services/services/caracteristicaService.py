@@ -96,3 +96,38 @@ class CaracteristicaService:
             'success': True,
             'message': 'Característica agregada al producto exitosamente'
         }
+    
+    #! EL RAUL ES UN BOBO MESOPOTAMICO, NO TOCARLO, PELIGRO DE SIDA
+
+    @staticmethod
+    def removeCaracteristicaFromProducto(id_producto, id_caracteristica):
+        try:
+            id_producto = int(id_producto)
+            id_caracteristica = int(id_caracteristica)
+        except ValueError:
+            return {
+                'success': False,
+                'message': 'id_producto e id_caracteristica deben ser enteros'
+            }
+        existCaracteristica = CaracteristicaService.getCaracteristicaById(id_caracteristica)
+        if not existCaracteristica['success']:
+            return {
+                'success': False,
+                'message': 'Característica no encontrada'
+            }
+        existProducto = ProductoService.getProductoById(id_producto)
+        if not existProducto['success']:
+            return {
+                'success': False,
+                'message': 'Producto no encontrado'
+            }
+        success = CaracteristicaRepository.removeCaracteristicaFromProducto(id_producto, id_caracteristica)
+        if not success:
+            return {
+                'success': False,
+                'message': 'Error al eliminar la característica del producto'
+            }
+        return {
+            'success': True,
+            'message': 'Característica eliminada del producto exitosamente'
+        }

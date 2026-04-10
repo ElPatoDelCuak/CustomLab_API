@@ -38,3 +38,14 @@ def addCaracteristicaToProducto(request):
         return Response(result, status=200)
     else:
         return Response(result, status=400)
+    
+@api_view(['DELETE'])
+def removeCaracteristicaFromProducto(request):
+    data = request.data
+    id_producto = data.get('id_producto')
+    id_caracteristica = data.get('id_caracteristica')
+    result = CaracteristicaService.removeCaracteristicaFromProducto(id_producto, id_caracteristica)
+    if result['success']:
+        return Response(result, status=200)
+    else:
+        return Response(result, status=400)
