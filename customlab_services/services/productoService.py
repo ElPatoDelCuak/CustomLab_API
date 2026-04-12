@@ -89,7 +89,6 @@ class ProductoService:
                 'message': 'Product name and images are required'
             }
 
-        # Product images always go to products folder.
         upload_type = 3
 
         for image in images:
