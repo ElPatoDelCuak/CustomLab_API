@@ -81,7 +81,7 @@ class UsuarioService:
             }
         
         email_duplicated = UsuarioRepository.getUsuarioByEmail(payload['email'])
-        if email_duplicated:
+        if email_duplicated and email_duplicated['id_usuario'] != idUsuario:
             return {
                 'success': False,
                 'message': 'El email ya esta registrado'
