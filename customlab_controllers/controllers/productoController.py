@@ -26,6 +26,7 @@ def getProductoById(request, id):
         return Response(producto, status=404)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def getFeaturedProducts(request):
     productos = ProductoService.getFeaturedProducts()
     if productos['success']:
