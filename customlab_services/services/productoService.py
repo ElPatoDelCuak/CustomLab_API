@@ -32,9 +32,6 @@ class ProductoService:
                     'success': False,
                     'message': 'Error retrieving product characteristics'
                 }
-            if producto['caracteristicas'] is 'success' and not producto['caracteristicas']['data']:
-                producto['caracteristicas'] = []
-                
         return {
             'success': True,
             'data': productos
