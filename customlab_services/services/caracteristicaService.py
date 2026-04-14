@@ -1,6 +1,5 @@
 from customlab_models.repositories.caracteristicaRepository import CaracteristicaRepository
-from customlab_services.services.productoService import ProductoService
-
+from customlab_models.repositories.productoRepository import ProductoRepository
 class CaracteristicaService:
     @staticmethod
     def getCaracteristicas():
@@ -66,8 +65,8 @@ class CaracteristicaService:
     
     @staticmethod
     def getCaracteristicasByProducto(id_producto):
-        existProducto = ProductoService.getProductoById(id_producto)
-        if not existProducto['success']:
+        existProducto = ProductoRepository.getProductoById(id_producto)
+        if not existProducto:
             return {
                 'success': False,
                 'message': 'Producto no encontrado'
@@ -94,13 +93,13 @@ class CaracteristicaService:
                 'message': 'id_producto e id_caracteristica deben ser enteros'
             }
         existCaracteristica = CaracteristicaService.getCaracteristicaById(id_caracteristica)
-        if not existCaracteristica['success']:
+        if not existCaracteristica:
             return {
                 'success': False,
                 'message': 'Característica no encontrada'
             }
-        existProducto = ProductoService.getProductoById(id_producto)
-        if not existProducto['success']:
+        existProducto = ProductoRepository.getProductoById(id_producto)
+        if not existProducto:
             return {
                 'success': False,
                 'message': 'Producto no encontrado'
@@ -115,8 +114,6 @@ class CaracteristicaService:
             'success': True,
             'message': 'Característica agregada al producto exitosamente'
         }
-    
-    #! EL RAUL ES UN BOBO MESOPOTAMICO, NO TOCARLO, PELIGRO DE SIDA
 
     @staticmethod
     def removeCaracteristicaFromProducto(id_producto, id_caracteristica):
@@ -134,8 +131,8 @@ class CaracteristicaService:
                 'success': False,
                 'message': 'Característica no encontrada'
             }
-        existProducto = ProductoService.getProductoById(id_producto)
-        if not existProducto['success']:
+        existProducto = ProductoRepository.getProductoById(id_producto)
+        if not existProducto:
             return {
                 'success': False,
                 'message': 'Producto no encontrado'

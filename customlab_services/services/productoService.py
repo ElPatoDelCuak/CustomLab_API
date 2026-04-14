@@ -1,5 +1,6 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
 from customlab_models.repositories.productImagesRepository import ProductImagesRepository
+from customlab_services.services.caracteristicaService import CaracteristicaService
 from customlab_services.services.imagesService import ImagesService
 from customlab_services.services.tallaService import TallaService
 import random
@@ -14,17 +15,26 @@ class ProductoService:
             }
         for producto in productos:
             producto['images'] = ProductImagesRepository.getProductImagesByProductId(producto['id_producto'])
-            producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
             if not producto['images']:
                 return {
                     'success': False,
                     'message': 'Error retrieving product images'
                 }
+            producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
             if not producto['tallas']:
                 return {
                     'success': False,
                     'message': 'Error retrieving product sizes'
                 }
+            producto['caracteristicas'] = CaracteristicaService.getCaracteristicasByProducto(producto['id_producto'])['data']
+            if not producto['caracteristicas']:
+                return {
+                    'success': False,
+                    'message': 'Error retrieving product characteristics'
+                }
+            if producto['caracteristicas'] is 'success' and not producto['caracteristicas']['data']:
+                producto['caracteristicas'] = []
+                
         return {
             'success': True,
             'data': productos
@@ -40,6 +50,7 @@ class ProductoService:
             }
         producto['images'] = ProductImagesRepository.getProductImagesByProductId(idProducto)
         producto['tallas'] = TallaService.getTallasByProductoId(idProducto)['data']
+        producto['caracteristicas'] = CaracteristicaService.getCaracteristicasByProducto(idProducto)['data']
         return {
             'success': True,
             'data': producto
@@ -64,6 +75,7 @@ class ProductoService:
         for producto in featured:
             producto['images'] = ProductImagesRepository.getProductImagesByProductId(producto['id_producto'])
             producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
+            producto['caracteristicas'] = CaracteristicaService.getCaracteristicasByProducto(producto['id_producto'])['data']
             if not producto['images']:
                 return {
                     'success': False,
