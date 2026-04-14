@@ -2,7 +2,7 @@ services:
   web:
     build: .
     container_name: customlab_api
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn customlab_api.wsgi:application --bind 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
@@ -14,6 +14,30 @@ services:
     networks:
       - customlab_network
     restart: unless-stopped
+
+  caddy:
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
+    container_name: customlab_caddy
+    restart: unless-stopped
+    environment:
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - customlab_network
+    depends_on:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:
 
 networks:
   customlab_network:
