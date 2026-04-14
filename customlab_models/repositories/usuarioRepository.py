@@ -19,8 +19,14 @@ class UsuarioRepository:
         return usuario
 
     @staticmethod
+    def getUsuarioByEmail(email):
+        return Usuarios.objects.filter(email__iexact=email).values(
+            'id_usuario','nombre','apellidos','email','password','fecha_nacimiento','doble_factor','rol'
+        ).first()
+
+    @staticmethod
     def createUsuario(data):
-        Usuarios.objects.create(
+        user = Usuarios.objects.create(
             nombre=data.get('nombre'),
             apellidos=data.get('apellidos'),
             email=data.get('email'),
@@ -29,13 +35,11 @@ class UsuarioRepository:
             doble_factor=data.get('doble_factor'),
             rol=data.get('rol'),
         )
-        if Usuarios.objects.exists():
-            return True
-        return False
+        return user is not None
     
     @staticmethod
     def updateUsuario(idUsuario, data):
-        Usuarios.objects.filter(id_usuario=idUsuario).update(
+        updated_rows = Usuarios.objects.filter(id_usuario=idUsuario).update(
             nombre=data.get('nombre'),
             apellidos=data.get('apellidos'),
             email=data.get('email'),
@@ -44,13 +48,9 @@ class UsuarioRepository:
             doble_factor=data.get('doble_factor'),
             rol=data.get('rol'),
         )
-        if Usuarios.objects.filter(id_usuario=idUsuario).exists():
-            return True
-        return False
+        return updated_rows > 0
     
     @staticmethod
     def deleteUsuario(idUsuario):
-        Usuarios.objects.filter(id_usuario=idUsuario).delete()
-        if not Usuarios.objects.filter(id_usuario=idUsuario).exists():
-            return True
-        return False
+        deleted_rows, _ = Usuarios.objects.filter(id_usuario=idUsuario).delete()
+        return deleted_rows > 0

@@ -1,6 +1,18 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from customlab_services.services.usuarioService import UsuarioService
+from django_ratelimit.decorators import ratelimit
+
+@ratelimit(key='ip', rate='5/m', block=True)
+@api_view(['POST'])
+def loginUsuario(request):
+    data = request.data
+    result = UsuarioService.verifyUsuario(data)
+    if result['success']:
+        return Response(result, status=200)
+    if result.get('message'):
+        return Response(result, status=400)
+    return Response(result, status=401)
 
 @api_view(['GET'])
 def getUsuarios(request):

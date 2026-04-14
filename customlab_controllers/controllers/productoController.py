@@ -1,8 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from customlab_services.services.productoService import ProductoService
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def getProductos(request):
     productos = ProductoService.getProductos()
     if productos['success']:
@@ -54,6 +56,7 @@ def updateProducto(request, id):
         return Response(result, status=400)
 
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def deleteProducto(request, id):
     result = ProductoService.deleteProducto(id)
     if result['success']:

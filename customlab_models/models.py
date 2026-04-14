@@ -78,8 +78,11 @@ class AuthUserUserPermissions(models.Model):
 
 
 class CaracteristicaProducto(models.Model):
-    id_caracteristica = models.ForeignKey('Caracteristicas', models.DO_NOTHING, db_column='id_caracteristica')
-    id_producto = models.ForeignKey('Productos', models.DO_NOTHING, db_column='id_producto')
+    id_caracteristica = models.ForeignKey('Caracteristicas', models.DO_NOTHING, 
+                                          db_column='id_caracteristica')
+    id_producto = models.ForeignKey('Productos', models.DO_NOTHING, 
+                                    db_column='id_producto')
+    pk = models.CompositePrimaryKey('id_caracteristica', 'id_producto')
 
     class Meta:
         managed = False

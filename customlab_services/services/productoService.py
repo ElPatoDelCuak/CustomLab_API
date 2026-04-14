@@ -1,5 +1,6 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
 from customlab_models.repositories.productImagesRepository import ProductImagesRepository
+from customlab_services.services.caracteristicaService import CaracteristicaService
 from customlab_services.services.imagesService import ImagesService
 from customlab_services.services.tallaService import TallaService
 import random
@@ -14,17 +15,18 @@ class ProductoService:
             }
         for producto in productos:
             producto['images'] = ProductImagesRepository.getProductImagesByProductId(producto['id_producto'])
-            producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
             if not producto['images']:
                 return {
                     'success': False,
                     'message': 'Error retrieving product images'
                 }
+            producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
             if not producto['tallas']:
                 return {
                     'success': False,
                     'message': 'Error retrieving product sizes'
                 }
+            producto['caracteristicas'] = CaracteristicaService.getCaracteristicasByProducto(producto['id_producto']).get('data', [])
         return {
             'success': True,
             'data': productos
@@ -39,7 +41,18 @@ class ProductoService:
                 'message': 'Producto not found'
             }
         producto['images'] = ProductImagesRepository.getProductImagesByProductId(idProducto)
+        if not producto['images']:
+            return {
+                'success': False,
+                'message': 'Error retrieving product images'
+            }
         producto['tallas'] = TallaService.getTallasByProductoId(idProducto)['data']
+        if not producto['tallas']:
+            return {
+                'success': False,
+                'message': 'Error retrieving product sizes'
+            }   
+        producto['caracteristicas'] = CaracteristicaService.getCaracteristicasByProducto(idProducto).get('data', [])
         return {
             'success': True,
             'data': producto
@@ -64,6 +77,7 @@ class ProductoService:
         for producto in featured:
             producto['images'] = ProductImagesRepository.getProductImagesByProductId(producto['id_producto'])
             producto['tallas'] = TallaService.getTallasByProductoId(producto['id_producto'])['data']
+            producto['caracteristicas'] = CaracteristicaService.getCaracteristicasByProducto(producto['id_producto']).get('data', [])
             if not producto['images']:
                 return {
                     'success': False,
@@ -89,7 +103,6 @@ class ProductoService:
                 'message': 'Product name and images are required'
             }
 
-        # Product images always go to products folder.
         upload_type = 3
 
         for image in images:

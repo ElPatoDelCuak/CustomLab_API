@@ -1,13 +1,16 @@
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+
 
 from .controllers.productoController import getFeaturedProducts, getProductos, getProductoById, createProducto, updateProducto, deleteProducto
-from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario
+from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario, loginUsuario
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
 from .controllers.userImagesController import getImagesByUserId, uploadImage, deleteImage
 from .controllers.productImagesController import getProductImagesByProductId, deleteProductImage, uploadProductImage
 from .controllers.tallaController import getTallas, getTallasByProductoId, createTalla, updateTalla, deleteTalla
+from customlab_controllers.controllers.caracteristicaController import addCaracteristicaToProducto, createCaracteristica, deleteCaracteristica, getCaracteristicas, getCaracteristicasByProducto, removeCaracteristicaFromProducto
 
 
 urlpatterns = [
@@ -22,6 +25,9 @@ urlpatterns = [
     path('usuarios/', getUsuarios),
     path('usuario/<int:id>/', getUsuarioById),
     path('usuarios/create/', createUsuario),
+    path('login/', loginUsuario),
+    path('login/refresh/', TokenRefreshView.as_view()),
+    path('login/verify/', TokenVerifyView.as_view()),
     path('usuarios/update/<int:id>/', updateUsuario),
     path('usuarios/delete/<int:id>/', deleteUsuario),
     # Pedido URLs
@@ -56,4 +62,11 @@ urlpatterns = [
     path('tallas/create/', createTalla),
     path('tallas/update/<int:id>/', updateTalla),
     path('tallas/delete/<int:id>/', deleteTalla),
+    # Caracteristicas URLs
+    path('caracteristicas/', getCaracteristicas),
+    path('caracteristicas/create/', createCaracteristica),
+    path('caracteristicas/delete/<int:id>/', deleteCaracteristica),
+    path('caracteristicas/producto/<int:id_producto>/', getCaracteristicasByProducto),
+    path('caracteristicas/add_to_producto/', addCaracteristicaToProducto),
+    path('caracteristicas/remove_from_producto/', removeCaracteristicaFromProducto),
 ]
