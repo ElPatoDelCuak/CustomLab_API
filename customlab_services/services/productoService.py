@@ -99,8 +99,12 @@ class ProductoService:
     @staticmethod
     def createProducto(data, images):
         product_name = data.get('nombre_producto')
-        tallas_raw = data.get('tallas')
-        caracteristicas_raw = data.get('caracteristicas')
+        if hasattr(data, 'getlist'):
+            tallas_raw = data.getlist('tallas') or data.getlist('tallas[]')
+            caracteristicas_raw = data.getlist('caracteristicas') or data.getlist('caracteristicas[]')
+        else:
+            tallas_raw = data.get('tallas') or data.get('tallas[]')
+            caracteristicas_raw = data.get('caracteristicas') or data.get('caracteristicas[]')
 
         # 1. Validaciones iniciales
         if not images or not product_name:
@@ -115,9 +119,28 @@ class ProductoService:
                 'message': 'Las tallas y características son obligatorias'
             }
 
+        def parse_items(raw_data):
+            if not raw_data: return []
+            if not isinstance(raw_data, list): raw_data = [raw_data]
+            
+            parsed_list = []
+            for item in raw_data:
+                if isinstance(item, str):
+                    try:
+                        decoded = json.loads(item)
+                        if isinstance(decoded, list):
+                            parsed_list.extend(decoded)
+                        else:
+                            parsed_list.append(decoded)
+                    except (json.JSONDecodeError, TypeError):
+                        pass # O manejar error según se prefiera
+                else:
+                    parsed_list.append(item)
+            return parsed_list
+
         try:
-            tallas = json.loads(tallas_raw) if isinstance(tallas_raw, str) else tallas_raw
-            caracteristicas = json.loads(caracteristicas_raw) if isinstance(caracteristicas_raw, str) else caracteristicas_raw
+            tallas = parse_items(tallas_raw)
+            caracteristicas = parse_items(caracteristicas_raw)
         except Exception:
             return {
                 'success': False,

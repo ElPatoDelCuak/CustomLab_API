@@ -40,7 +40,7 @@ def getFeaturedProducts(request):
 @api_view(['POST'])
 def createProducto(request):
     data = request.data
-    images = request.FILES.getlist('images')
+    images = request.FILES.getlist('images') or request.FILES.getlist('images[]')
     result = ProductoService.createProducto(data, images)
     if result['success']:
         return Response(result, status=201)
