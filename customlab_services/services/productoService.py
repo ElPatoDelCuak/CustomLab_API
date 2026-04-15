@@ -1,9 +1,12 @@
 from customlab_models.repositories.productoRepository import ProductoRepository
 from customlab_models.repositories.productImagesRepository import ProductImagesRepository
+from customlab_models.repositories.tallaRepository import TallaRepository
+from customlab_models.repositories.caracteristicaRepository import CaracteristicaRepository
 from customlab_services.services.caracteristicaService import CaracteristicaService
 from customlab_services.services.imagesService import ImagesService
 from customlab_services.services.tallaService import TallaService
 import random
+import json
 class ProductoService:
     @staticmethod
     def getProductos():
@@ -96,22 +99,46 @@ class ProductoService:
     @staticmethod
     def createProducto(data, images):
         product_name = data.get('nombre_producto')
+        tallas_raw = data.get('tallas')
+        caracteristicas_raw = data.get('caracteristicas')
 
+        # 1. Validaciones iniciales
         if not images or not product_name:
             return {
                 'success': False,
-                'message': 'Product name and images are required'
+                'message': 'El nombre del producto y las imágenes son obligatorios'
             }
 
-        upload_type = 3
+        if not tallas_raw or not caracteristicas_raw:
+            return {
+                'success': False,
+                'message': 'Las tallas y características son obligatorias'
+            }
 
+        try:
+            tallas = json.loads(tallas_raw) if isinstance(tallas_raw, str) else tallas_raw
+            caracteristicas = json.loads(caracteristicas_raw) if isinstance(caracteristicas_raw, str) else caracteristicas_raw
+        except Exception:
+            return {
+                'success': False,
+                'message': 'Error al procesar el formato de tallas o características'
+            }
+
+        if not tallas or not caracteristicas:
+            return {
+                'success': False,
+                'message': 'Se requiere al menos una talla y una característica'
+            }
+
+        # 2. Verificar formato de imágenes
         for image in images:
             if not ImagesService.verifyImage(image):
                 return {
                     'success': False,
-                    'message': 'Invalid image format'
+                    'message': 'Formato de imagen inválido'
                 }
 
+        # 3. Crear el producto base
         producto = ProductoRepository.createProducto(data)
         if not producto:
             return {
@@ -119,34 +146,42 @@ class ProductoService:
                 'message': 'Error al crear el producto'
             }
 
+        # 4. Procesar Imágenes
+        upload_type = 3
         saved_paths = []
         for image in images:
             image_path = ImagesService.saveImage(producto.id_producto, upload_type, image)
             if not image_path:
-                for path in saved_paths:
-                    ImagesService.deleteImage(path)
-                ProductoRepository.deleteProducto(producto.id_producto)
-                return {
-                    'success': False,
-                    'message': 'Error saving image'
-                }
+                ProductoService.deleteProducto(producto.id_producto)
+                return {'success': False, 'message': 'Error al guardar el archivo de imagen'}
             saved_paths.append(image_path)
 
         for path in saved_paths:
             saved = ProductImagesRepository.saveProductImages(producto.id_producto, path)
             if not saved:
-                for image_path in saved_paths:
-                    ImagesService.deleteImage(image_path)
-                ProductImagesRepository.deleteProductImages(producto.id_producto)
-                ProductoRepository.deleteProducto(producto.id_producto)
-                return {
-                    'success': False,
-                    'message': 'Error saving image metadata'
-                }
+                ProductoService.deleteProducto(producto.id_producto)
+                return {'success': False, 'message': 'Error al registrar la imagen en la base de datos'}
+
+        # 5. Procesar Tallas
+        for talla_data in tallas:
+            talla_data['id_producto'] = producto.id_producto
+            success = TallaService.createTalla(talla_data)
+            if not success['success']:
+                ProductoService.deleteProducto(producto.id_producto)
+                return {'success': False, 'message': f'Error al crear la talla: {success.get("message")}'}
+
+        # 6. Procesar Características
+        for carac_data in caracteristicas:
+            # carac_data puede ser un ID directo o un objeto {"id_caracteristica": ID}
+            id_carac = carac_data.get('id_caracteristica') if isinstance(carac_data, dict) else carac_data
+            success = CaracteristicaService.addCaracteristicaToProducto(producto.id_producto, id_carac)
+            if not success['success']:
+                ProductoService.deleteProducto(producto.id_producto)
+                return {'success': False, 'message': f'Error al asociar la característica: {success.get("message")}'}
 
         return {
             'success': True,
-            'message': 'Producto creado exitosamente'
+            'message': 'Producto creado exitosamente con sus tallas y características'
         }
     
     @staticmethod
@@ -176,11 +211,24 @@ class ProductoService:
                 'success': False,
                 'message': 'Producto no encontrado'
             }
+        
+        # 1. Eliminar archivos físicos de imágenes
         images = ProductImagesRepository.getProductImagesByProductId(idProducto)
         for img in images:
             ImagesService.deleteImage(img['ruta'])
+        
+        # 2. Eliminar registros de imágenes en BD
         ProductImagesRepository.deleteProductImages(idProducto)
+        
+        # 3. Eliminar tallas relacionadas
+        TallaRepository.deleteTallasByProductoId(idProducto)
+        
+        # 4. Eliminar asociaciones de características
+        CaracteristicaRepository.removeCaracteristicasByProductoId(idProducto)
+        
+        # 5. Eliminar el producto final
         success = ProductoRepository.deleteProducto(idProducto)
+        
         if success:
             return {
                 'success': True,

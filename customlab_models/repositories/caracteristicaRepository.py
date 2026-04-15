@@ -66,3 +66,8 @@ class CaracteristicaRepository:
         if not CaracteristicaProducto.objects.filter(id_producto_id=id_producto, id_caracteristica_id=id_caracteristica).exists():
             return True
         return False
+
+    @staticmethod
+    def removeCaracteristicasByProductoId(id_producto):
+        CaracteristicaProducto.objects.filter(id_producto_id=id_producto).delete()
+        return not CaracteristicaProducto.objects.filter(id_producto_id=id_producto).exists()
