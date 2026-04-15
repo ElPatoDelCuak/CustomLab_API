@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from customlab_services.services.productoService import ProductoService
+from customlab_api.permissions import IsAdminOrManager
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -16,6 +17,7 @@ def getProductos(request):
         return Response(productos, status=404)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getProductoById(request, id):
     producto = ProductoService.getProductoById(id)
     if producto['success']:
@@ -38,6 +40,7 @@ def getFeaturedProducts(request):
         return Response(productos, status=404)
 
 @api_view(['POST'])
+@permission_classes([IsAdminOrManager])
 def createProducto(request):
     data = request.data
     images = request.FILES.getlist('images')
@@ -48,6 +51,7 @@ def createProducto(request):
         return Response(result, status=400)
 
 @api_view(['PUT'])
+@permission_classes([IsAdminOrManager])
 def updateProducto(request, id):
     data = request.data
     result = ProductoService.updateProducto(id, data)
@@ -57,7 +61,7 @@ def updateProducto(request, id):
         return Response(result, status=400)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrManager])
 def deleteProducto(request, id):
     result = ProductoService.deleteProducto(id)
     if result['success']:
