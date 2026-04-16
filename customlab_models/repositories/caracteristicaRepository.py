@@ -19,6 +19,15 @@ class CaracteristicaRepository:
         if not caracteristica:
             return False
         return caracteristica
+
+    @staticmethod
+    def getCaracteristicaByName(name):
+        caracteristica = Caracteristicas.objects.filter(caracteristica=name).values(
+            'id_caracteristica', 'caracteristica'
+        ).first()
+        if not caracteristica:
+            return False
+        return caracteristica
     
     @staticmethod
     def createCaracteristica(data):
