@@ -7,6 +7,7 @@ from .controllers.usuarioController import getUsuarios, getUsuarioById, createUs
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
+from .controllers.carritoController import getCarritoByUserId, addItemToCarrito, updateCarritoItem, removeItemFromCarrito, clearCarrito
 from .controllers.userImagesController import getImagesByUserId, uploadImage, deleteImage
 from .controllers.productImagesController import getProductImagesByProductId, deleteProductImage, uploadProductImage
 from .controllers.tallaController import getTallas, getTallasByProductoId, createTalla, updateTalla, deleteTalla
@@ -69,4 +70,10 @@ urlpatterns = [
     path('caracteristicas/producto/<int:id_producto>/', getCaracteristicasByProducto),
     path('caracteristicas/add_to_producto/', addCaracteristicaToProducto),
     path('caracteristicas/remove_from_producto/', removeCaracteristicaFromProducto),
+    # Carrito URLs
+    path('carrito/<int:user_id>/', getCarritoByUserId),
+    path('carrito/add/', addItemToCarrito),
+    path('carrito/update/', updateCarritoItem),
+    path('carrito/remove/', removeItemFromCarrito),
+    path('carrito/clear/<int:user_id>/', clearCarrito),
 ]
