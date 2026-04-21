@@ -62,3 +62,7 @@ class TallaRepository:
         if not Tallas.objects.filter(id_talla=idTalla).exists():
             return True
         return False
+    @staticmethod
+    def deleteTallasByProductoId(idProducto):
+        Tallas.objects.filter(id_producto=idProducto).delete()
+        return not Tallas.objects.filter(id_producto=idProducto).exists()

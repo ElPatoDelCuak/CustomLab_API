@@ -25,6 +25,19 @@ class CaracteristicaService:
             'success': False,
             'message': 'Característica no encontrada'
         }
+
+    @staticmethod
+    def getCaracteristicaByName(name):
+        caracteristica = CaracteristicaRepository.getCaracteristicaByName(name)
+        if caracteristica:
+            return {
+                'success': True,
+                'data': caracteristica
+            }
+        return {
+            'success': False,
+            'message': 'Característica no encontrada'
+        }
     
     @staticmethod
     def createCaracteristica(data):
@@ -32,6 +45,12 @@ class CaracteristicaService:
             return {
                 'success': False,
                 'message': 'La característica es obligatoria'
+            }
+        exist = CaracteristicaService.getCaracteristicaByName(data.get('caracteristica'))
+        if exist['success']:
+            return {
+                'success': False,
+                'message': 'La característica ya existe'
             }
         success = CaracteristicaRepository.createCaracteristica(data)
         if success:
