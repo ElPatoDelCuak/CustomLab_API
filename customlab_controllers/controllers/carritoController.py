@@ -17,12 +17,13 @@ def addItemToCarrito(request):
     data = request.data
     id_usuario = data.get('id_usuario')
     id_producto = data.get('id_producto')
+    id_talla = data.get('id_talla')
     cantidad = data.get('cantidad')
 
-    if not all([id_usuario, id_producto, cantidad]):
+    if not all([id_usuario, id_producto, id_talla, cantidad]):
         return Response({
             'success': False,
-            'message': 'Faltan parámetros requeridos: id_usuario, id_producto, cantidad'
+            'message': 'Faltan parámetros requeridos: id_usuario, id_producto, id_talla, cantidad'
         }, status=400)
 
     try:
@@ -38,7 +39,7 @@ def addItemToCarrito(request):
             'message': 'La cantidad debe ser un número entero'
         }, status=400)
 
-    result = CarritoService.addItemToCarrito(id_usuario, id_producto, cantidad)
+    result = CarritoService.addItemToCarrito(id_usuario, id_producto, id_talla, cantidad)
     if result['success']:
         return Response(result, status=201)
     else:
@@ -50,12 +51,13 @@ def updateCarritoItem(request):
     data = request.data
     id_usuario = data.get('id_usuario')
     id_producto = data.get('id_producto')
+    id_talla = data.get('id_talla')
     cantidad = data.get('cantidad')
 
-    if not all([id_usuario, id_producto, cantidad is not None]):
+    if not all([id_usuario, id_producto, id_talla, cantidad is not None]):
         return Response({
             'success': False,
-            'message': 'Faltan parámetros requeridos: id_usuario, id_producto, cantidad'
+            'message': 'Faltan parámetros requeridos: id_usuario, id_producto, id_talla, cantidad'
         }, status=400)
 
     try:
@@ -66,7 +68,7 @@ def updateCarritoItem(request):
             'message': 'La cantidad debe ser un número entero'
         }, status=400)
 
-    result = CarritoService.updateCarritoItem(id_usuario, id_producto, cantidad)
+    result = CarritoService.updateCarritoItem(id_usuario, id_producto, id_talla, cantidad)
     if result['success']:
         return Response(result, status=200)
     else:
@@ -78,14 +80,15 @@ def removeItemFromCarrito(request):
     data = request.data
     id_usuario = data.get('id_usuario')
     id_producto = data.get('id_producto')
+    id_talla = data.get('id_talla')
 
-    if not all([id_usuario, id_producto]):
+    if not all([id_usuario, id_producto, id_talla]):
         return Response({
             'success': False,
-            'message': 'Faltan parámetros requeridos: id_usuario, id_producto'
+            'message': 'Faltan parámetros requeridos: id_usuario, id_producto, id_talla'
         }, status=400)
 
-    result = CarritoService.removeItemFromCarrito(id_usuario, id_producto)
+    result = CarritoService.removeItemFromCarrito(id_usuario, id_producto, id_talla)
     if result['success']:
         return Response(result, status=200)
     else:

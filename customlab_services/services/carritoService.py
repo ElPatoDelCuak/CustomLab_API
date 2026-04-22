@@ -1,41 +1,43 @@
 from customlab_models.repositories.carritoRepository import CarritoRepository
-from customlab_models.repositories.productoRepository import ProductoRepository
-from customlab_models.repositories.usuarioRepository import UsuarioRepository
+from customlab_services.services.productoService import ProductoService
+from customlab_services.services.usuarioService import UsuarioService
+from customlab_services.services.tallaService import TallaService
 
 
 class CarritoService:
     @staticmethod
     def getCarritoByUserId(id_usuario):
-        # Verificar que el usuario existe
-        usuario = UsuarioRepository.getUsuarioById(id_usuario)
-        if not usuario:
-            return {
-                'success': False,
-                'message': 'Usuario no encontrado'
-            }
+        user_exists = UsuarioService.getUsuarioById(id_usuario)
+        if not user_exists['success']:
+            return user_exists
 
         carrito = CarritoRepository.getCarritoByUserId(id_usuario)
         if carrito is False:
-            return {
-                'success': True,
-                'data': []
-            }
+            return {'success': True, 'data': []}
 
-        # Enriquecer con información del producto
         carrito_enriquecido = []
         for item in carrito:
-            producto = ProductoRepository.getProductoById(item['id_producto'])
-            if producto:
+            producto_res = ProductoService.getProductoById(item['id_producto'])
+            talla_res = TallaService.getTallaById(item['id_talla'])
+            
+            if producto_res['success'] and talla_res['success']:
+                producto_data = producto_res['data']
+                talla_data = talla_res['data']
+                
                 item_enriquecido = {
                     'id_usuario': item['id_usuario'],
                     'id_producto': item['id_producto'],
+                    'id_talla': item['id_talla'],
                     'cantidad': item['cantidad'],
                     'precio_total': float(item['precio_total']),
                     'producto': {
-                        'nombre_producto': producto['nombre_producto'],
-                        'precio_venta': float(producto['precio_venta']),
-                        'stock': producto['stock'],
-                        'categoria': producto['categoria']
+                        'nombre_producto': producto_data['nombre_producto'],
+                        'precio_unitario': float(producto_data['precio_venta']),
+                        'imagen': producto_data['images'][0]['ruta'] if producto_data['images'] else None,
+                        'categoria': producto_data['categoria']
+                    },
+                    'talla': {
+                        'nombre': talla_data['talla']
                     }
                 }
                 carrito_enriquecido.append(item_enriquecido)
@@ -46,131 +48,142 @@ class CarritoService:
         }
 
     @staticmethod
-    def addItemToCarrito(id_usuario, id_producto, cantidad):
-        # Verificar que el usuario existe
-        usuario = UsuarioRepository.getUsuarioById(id_usuario)
-        if not usuario:
+    def addItemToCarrito(id_usuario, id_producto, id_talla, cantidad):
+        user_res = UsuarioService.getUsuarioById(id_usuario)
+        if not user_res['success']:
+            return user_res
+
+        product_res = ProductoService.getProductoById(id_producto)
+        if not product_res['success']:
+            return product_res
+
+        producto_data = product_res['data']
+        
+        talla_res = TallaService.getTallaById(id_talla)
+        if not talla_res['success']:
+            return talla_res
+        
+        talla_data = talla_res['data']
+        if talla_data['id_producto'] != id_producto:
             return {
                 'success': False,
-                'message': 'Usuario no encontrado'
+                'message': 'La talla seleccionada no pertenece a este producto'
             }
 
-        # Verificar que el producto existe
-        producto = ProductoRepository.getProductoById(id_producto)
-        if not producto:
+        if cantidad > talla_data['stock']:
             return {
                 'success': False,
-                'message': 'Producto no encontrado'
+                'message': f'Cantidad solicitada ({cantidad}) supera el stock disponible de la talla ({talla_data["stock"]})'
             }
-
-        # Verificar stock
-        if cantidad > producto['stock']:
+        
+        if cantidad <= 0:
             return {
                 'success': False,
-                'message': 'Cantidad solicitada supera el stock disponible'
+                'message': 'La cantidad debe ser mayor a 0'
             }
 
-        # Calcular precio total
-        precio_total = float(producto['precio_venta']) * cantidad
+        product_price = producto_data['precio_venta']
 
-        # Verificar si el item ya existe en el carrito
-        existing_item = CarritoRepository.getCarritoItem(id_usuario, id_producto)
-        if existing_item:
-            # Actualizar cantidad y precio total
-            nueva_cantidad = existing_item['cantidad'] + cantidad
-            if nueva_cantidad > producto['stock']:
+        exist_item = CarritoRepository.getCarritoItem(id_usuario, id_producto, id_talla)
+        
+        if exist_item:
+            if exist_item['cantidad'] + cantidad > talla_data['stock']:
                 return {
                     'success': False,
-                    'message': 'Cantidad total supera el stock disponible'
+                    'message': 'La cantidad total superaría el stock disponible'
                 }
-            nuevo_precio_total = float(producto['precio_venta']) * nueva_cantidad
-            success = CarritoRepository.updateCarritoItem(id_usuario, id_producto, nueva_cantidad, nuevo_precio_total)
+            exito = CarritoRepository.incrementarCantidad(id_usuario, id_producto, id_talla, cantidad, product_price)
         else:
-            # Crear nuevo item
-            success = CarritoRepository.createCarritoItem(id_usuario, id_producto, cantidad, precio_total)
+            total_price = product_price * cantidad
+            exito = CarritoRepository.createCarritoItem(id_usuario, id_producto, id_talla, cantidad, total_price)
 
-        if success:
+        if exito:
             return {
                 'success': True,
                 'message': 'Producto agregado al carrito exitosamente'
             }
+        
         return {
             'success': False,
-            'message': 'Error al agregar producto al carrito'
+            'message': 'Error al procesar la solicitud en el carrito'
         }
 
     @staticmethod
-    def updateCarritoItem(id_usuario, id_producto, cantidad):
-        # Verificar que el usuario existe
-        usuario = UsuarioRepository.getUsuarioById(id_usuario)
-        if not usuario:
-            return {
+    def updateCarritoItem(id_usuario, id_producto, id_talla, cantidad):
+        user_res = UsuarioService.getUsuarioById(id_usuario)
+        if not user_res['success']:
+            return user_res
+
+        product_res = ProductoService.getProductoById(id_producto)
+        if not product_res['success']:
+            return product_res
+        
+        producto_data = product_res['data']
+
+        talla_res = TallaService.getTallaById(id_talla)
+        if not talla_res['success']:
+            return talla_res
+            
+        talla_data = talla_res['data']
+
+        if talla_data['id_producto'] != id_producto:
+             return {
                 'success': False,
-                'message': 'Usuario no encontrado'
+                'message': 'La talla seleccionada no pertenece a este producto'
             }
 
-        # Verificar que el producto existe
-        producto = ProductoRepository.getProductoById(id_producto)
-        if not producto:
+        exist_item = CarritoRepository.getCarritoItem(id_usuario, id_producto, id_talla)
+        if not exist_item:
             return {
                 'success': False,
-                'message': 'Producto no encontrado'
-            }
-
-        # Verificar stock
-        if cantidad > producto['stock']:
-            return {
-                'success': False,
-                'message': 'Cantidad solicitada supera el stock disponible'
-            }
-
-        # Verificar que el item existe en el carrito
-        existing_item = CarritoRepository.getCarritoItem(id_usuario, id_producto)
-        if not existing_item:
-            return {
-                'success': False,
-                'message': 'Producto no encontrado en el carrito'
+                'message': 'Producto con esa talla no encontrado en el carrito'
             }
 
         if cantidad <= 0:
-            # Si cantidad es 0 o negativa, eliminar el item
-            success = CarritoRepository.deleteCarritoItem(id_usuario, id_producto)
+            exito = CarritoRepository.deleteCarritoItem(id_usuario, id_producto, id_talla)
             message = 'Producto eliminado del carrito'
+        elif cantidad == exist_item['cantidad']:
+            return {
+                'success': True,
+                'message': 'La cantidad es la misma que ya existe en el carrito'
+            }
         else:
-            # Actualizar cantidad y precio total
-            precio_total = float(producto['precio_venta']) * cantidad
-            success = CarritoRepository.updateCarritoItem(id_usuario, id_producto, cantidad, precio_total)
-            message = 'Producto actualizado en el carrito'
+            if cantidad > talla_data['stock']:
+                return {
+                    'success': False,
+                    'message': f'Cantidad solicitada ({cantidad}) supera el stock disponible de la talla ({talla_data["stock"]})'
+                }
+                
+            product_price = producto_data['precio_venta']
+            nuevo_precio_total = product_price * cantidad
+            exito = CarritoRepository.updateCarritoItem(id_usuario, id_producto, id_talla, cantidad, nuevo_precio_total)
+            message = 'Carrito actualizado exitosamente'
 
-        if success:
+        if exito:
             return {
                 'success': True,
                 'message': message
             }
+        
         return {
             'success': False,
-            'message': 'Error al actualizar el carrito'
+            'message': 'Error al procesar la actualización del carrito'
         }
-
+            
     @staticmethod
-    def removeItemFromCarrito(id_usuario, id_producto):
-        # Verificar que el usuario existe
-        usuario = UsuarioRepository.getUsuarioById(id_usuario)
-        if not usuario:
+    def removeItemFromCarrito(id_usuario, id_producto, id_talla):
+        user_res = UsuarioService.getUsuarioById(id_usuario)
+        if not user_res['success']:
+            return user_res
+            
+        exist_item = CarritoRepository.getCarritoItem(id_usuario, id_producto, id_talla)
+        if not exist_item:
             return {
                 'success': False,
-                'message': 'Usuario no encontrado'
+                'message': 'Producto con esa talla no encontrado en el carrito'
             }
-
-        # Verificar que el item existe en el carrito
-        existing_item = CarritoRepository.getCarritoItem(id_usuario, id_producto)
-        if not existing_item:
-            return {
-                'success': False,
-                'message': 'Producto no encontrado en el carrito'
-            }
-
-        success = CarritoRepository.deleteCarritoItem(id_usuario, id_producto)
+            
+        success = CarritoRepository.deleteCarritoItem(id_usuario, id_producto, id_talla)
         if success:
             return {
                 'success': True,
@@ -183,14 +196,10 @@ class CarritoService:
 
     @staticmethod
     def clearCarrito(id_usuario):
-        # Verificar que el usuario existe
-        usuario = UsuarioRepository.getUsuarioById(id_usuario)
-        if not usuario:
-            return {
-                'success': False,
-                'message': 'Usuario no encontrado'
-            }
-
+        user_res = UsuarioService.getUsuarioById(id_usuario)
+        if not user_res['success']:
+            return user_res
+            
         success = CarritoRepository.clearCarritoByUserId(id_usuario)
         if success:
             return {
