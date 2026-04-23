@@ -11,7 +11,6 @@ def getCarritoByUserId(request):
     user_id = request.user.id_usuario
     carrito = CarritoService.getCarritoByUserId(user_id)
     if carrito['success']:
-        # Transform image paths to absolute URLs
         for item in carrito['data']:
             if item['producto'].get('imagen'):
                 item['producto']['imagen'] = request.build_absolute_uri(item['producto']['imagen'])
