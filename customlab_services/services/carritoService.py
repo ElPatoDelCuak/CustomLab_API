@@ -39,7 +39,7 @@ class CarritoService:
                     },
                     'talla': {
                         'nombre': talla_data['talla'],
-                        'stock_talla': talla_data['stock']
+                        'stock': talla_data['stock']
                     }
                 }
                 carrito_enriquecido.append(item_enriquecido)
