@@ -34,10 +34,12 @@ class CarritoService:
                         'nombre_producto': producto_data['nombre_producto'],
                         'precio_unitario': float(producto_data['precio_venta']),
                         'imagen': producto_data['images'][0]['ruta'] if producto_data['images'] else None,
-                        'categoria': producto_data['categoria']
+                        'categoria': producto_data['categoria'],
+                        'stock': producto_data['stock']
                     },
                     'talla': {
-                        'nombre': talla_data['talla']
+                        'nombre': talla_data['talla'],
+                        'stock_talla': talla_data['stock']
                     }
                 }
                 carrito_enriquecido.append(item_enriquecido)
