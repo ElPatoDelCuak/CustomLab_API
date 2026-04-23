@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 
 from .controllers.productoController import getFeaturedProducts, getProductos, getProductoById, createProducto, updateProducto, deleteProducto
-from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario, loginUsuario
+from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario, loginUsuario, setup_2fa, enable_2fa, disable_2fa
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
@@ -30,6 +30,9 @@ urlpatterns = [
     path('login/verify/', TokenVerifyView.as_view()),
     path('usuarios/update/<int:id>/', updateUsuario),
     path('usuarios/delete/<int:id>/', deleteUsuario),
+    path('2fa/setup/', setup_2fa),
+    path('2fa/enable/', enable_2fa),
+    path('2fa/disable/', disable_2fa),
     # Pedido URLs
     path('pedidos/', getPedidos),
     path('pedido/<int:id>/', getPedidoById),

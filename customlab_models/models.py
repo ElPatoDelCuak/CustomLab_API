@@ -266,6 +266,7 @@ class Usuarios(models.Model):
     email = models.CharField(unique=True, max_length=150)
     fecha_nacimiento = models.DateField(blank=True, null=True)
     doble_factor = models.BooleanField(blank=True, null=True)
+    secret_2fa = models.CharField(max_length=32, blank=True, null=True)  # Campo para el secret de 2FA
     rol = models.CharField(max_length=50)
 
     class Meta:

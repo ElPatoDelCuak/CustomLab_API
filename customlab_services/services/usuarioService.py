@@ -3,6 +3,10 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
+import pyotp
+import qrcode
+import io
+import base64
 
 class UsuarioService:
     @staticmethod
@@ -166,6 +170,20 @@ class UsuarioService:
                 'message': 'Credenciales invalidas'
             }
 
+        # Verificar 2FA si está habilitado
+        if usuario.get('doble_factor'):
+            code_2fa = data.get('code_2fa')
+            if not code_2fa:
+                return {
+                    'success': False,
+                    'message': 'Código 2FA requerido'
+                }
+            if not UsuarioService.verify_2fa_code(usuario.get('secret_2fa'), code_2fa):
+                return {
+                    'success': False,
+                    'message': 'Código 2FA inválido'
+                }
+
         refresh = RefreshToken()
         refresh['id_usuario'] = usuario['id_usuario']
         refresh['email'] = usuario['email']
@@ -189,4 +207,39 @@ class UsuarioService:
                 }
             }
         }
+
+    @staticmethod
+    def generate_2fa_secret():
+        """Genera un secret para 2FA."""
+        return pyotp.random_base32()
+
+    @staticmethod
+    def get_2fa_qr_code(email, secret):
+        """Genera un QR code para configurar 2FA."""
+        totp = pyotp.TOTP(secret)
+        uri = totp.provisioning_uri(name=email, issuer_name="CustomLab API")
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(uri)
+        qr.make(fit=True)
+        img = qr.make_image(fill='black', back_color='white')
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_str = base64.b64encode(buffer.getvalue()).decode()
+        return f"data:image/png;base64,{img_str}"
+
+    @staticmethod
+    def enable_2fa(user_id, secret):
+        """Habilita 2FA para un usuario."""
+        return UsuarioRepository.updateUsuario(user_id, {'doble_factor': True, 'secret_2fa': secret})
+
+    @staticmethod
+    def disable_2fa(user_id):
+        """Deshabilita 2FA para un usuario."""
+        return UsuarioRepository.updateUsuario(user_id, {'doble_factor': False, 'secret_2fa': None})
+
+    @staticmethod
+    def verify_2fa_code(secret, code):
+        """Verifica un código 2FA."""
+        totp = pyotp.TOTP(secret)
+        return totp.verify(code)
     
