@@ -1,10 +1,14 @@
+from rest_framework.decorators import permission_classes
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from customlab_services.services.carritoService import CarritoService
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['GET'])
-def getCarritoByUserId(request, user_id):
+@permission_classes([IsAuthenticated])
+def getCarritoByUserId(request):
+    user_id = request.user.id_usuario
     carrito = CarritoService.getCarritoByUserId(user_id)
     if carrito['success']:
         return Response(carrito, status=200)
@@ -13,9 +17,10 @@ def getCarritoByUserId(request, user_id):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def addItemToCarrito(request):
     data = request.data
-    id_usuario = data.get('id_usuario')
+    id_usuario = request.user.id_usuario
     id_producto = data.get('id_producto')
     id_talla = data.get('id_talla')
     cantidad = data.get('cantidad')
@@ -47,9 +52,10 @@ def addItemToCarrito(request):
 
 
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def updateCarritoItem(request):
     data = request.data
-    id_usuario = data.get('id_usuario')
+    id_usuario = request.user.id_usuario
     id_producto = data.get('id_producto')
     id_talla = data.get('id_talla')
     cantidad = data.get('cantidad')
@@ -76,9 +82,10 @@ def updateCarritoItem(request):
 
 
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def removeItemFromCarrito(request):
     data = request.data
-    id_usuario = data.get('id_usuario')
+    id_usuario = request.user.id_usuario
     id_producto = data.get('id_producto')
     id_talla = data.get('id_talla')
 
@@ -96,7 +103,9 @@ def removeItemFromCarrito(request):
 
 
 @api_view(['DELETE'])
-def clearCarrito(request, user_id):
+@permission_classes([IsAuthenticated])
+def clearCarrito(request):
+    user_id = request.user.id_usuario
     result = CarritoService.clearCarrito(user_id)
     if result['success']:
         return Response(result, status=200)
