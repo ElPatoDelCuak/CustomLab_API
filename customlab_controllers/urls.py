@@ -10,8 +10,8 @@ from .controllers.pedidoController import getPedidos, getPedidoById, createPedid
 from .controllers.userImagesController import getImagesByUserId, uploadImage, deleteImage
 from .controllers.productImagesController import getProductImagesByProductId, deleteProductImage, uploadProductImage
 from .controllers.tallaController import getTallas, getTallasByProductoId, createTalla, updateTalla, deleteTalla
-from customlab_controllers.controllers.caracteristicaController import addCaracteristicaToProducto, createCaracteristica, deleteCaracteristica, getCaracteristicas, getCaracteristicasByProducto, removeCaracteristicaFromProducto
-
+from .controllers.caracteristicaController import addCaracteristicaToProducto, createCaracteristica, deleteCaracteristica, getCaracteristicas, getCaracteristicasByProducto, removeCaracteristicaFromProducto
+from .controllers.carritoController import getCarritoByUserId, addItemToCarrito, updateCarritoItem, removeItemFromCarrito, clearCarrito
 
 urlpatterns = [
     #Productos URLs
