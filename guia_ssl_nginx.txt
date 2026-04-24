@@ -1,0 +1,115 @@
+GUIA PARA IMPLEMENTAR SSL (HTTPS) CON NGINX Y DUCK DNS
+======================================================
+
+Este documento contiene los pasos y códigos necesarios para configurar HTTPS en tu API
+usando puertos no estándar (8080 y 8443) y el servicio Duck DNS para un proyecto de clase.
+
+1. REQUERIMIENTOS
+-----------------
+- Dominio Duck DNS (ej: tu-app.duckdns.org)
+- Token de Duck DNS (disponible en duckdns.org)
+- Puertos 8080 y 8443 abiertos en tu router y apuntando a tu servidor.
+
+2. CONFIGURACIÓN DE DOCKER-COMPOSE.YML
+--------------------------------------
+Modifica tu archivo docker-compose.yml para que incluya Nginx y Certbot:
+
+services:
+  web:
+    build: .
+    container_name: customlab_api
+    # Ya no exponemos el puerto 8000 al exterior
+    expose:
+      - "8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - customlab_network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: customlab_nginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - customlab_network
+    depends_on:
+      - web
+
+  certbot:
+    image: certbot/certbot
+    container_name: customlab_certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/duckdns-auth.sh:/usr/local/bin/duckdns-auth.sh
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+3. CONFIGURACIÓN DE NGINX (nginx/conf.d/default.conf)
+-----------------------------------------------------
+Crea la carpeta 'nginx/conf.d/' y dentro el archivo 'default.conf':
+
+server {
+    listen 80;
+    server_name tu-app.duckdns.org;
+
+    # Redirección de HTTP (8080) a HTTPS (8443)
+    location / {
+        return 301 https://$host:8443$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name tu-app.duckdns.org;
+
+    ssl_certificate /etc/letsencrypt/live/tu-app.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/tu-app.duckdns.org/privkey.pem;
+
+    location / {
+        proxy_pass http://web:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+4. AJUSTES EN DJANGO (settings.py)
+----------------------------------
+Añade estas líneas al final de tu customlab_api/settings.py:
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+# Si quieres forzar HTTPS desde Django también:
+# SECURE_SSL_REDIRECT = True 
+
+5. OBTENCIÓN DEL CERTIFICADO (DNS CHALLENGE)
+--------------------------------------------
+Como no usas el puerto 80, debes ejecutar este comando una vez configurado el script de Duck DNS:
+
+docker-compose run --rm certbot certonly \
+  --manual \
+  --preferred-challenges dns \
+  --manual-auth-hook /usr/local/bin/duckdns-auth.sh \
+  -d tu-app.duckdns.org
+
+6. SCRIPT DE AUTENTICACIÓN (certbot/duckdns-auth.sh)
+---------------------------------------------------
+#!/bin/sh
+TOKEN="TU_TOKEN_DE_DUCKDNS"
+DOMAIN="tu-app"
+curl "https://www.duckdns.org/update?domains=$DOMAIN&token=$TOKEN&txt=$CERTBOT_VALIDATION"
+sleep 30
+
+------------------------------------------------------
+Guía generada para el proyecto CustomLab API.
