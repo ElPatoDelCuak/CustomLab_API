@@ -69,4 +69,10 @@ urlpatterns = [
     path('caracteristicas/producto/<int:id_producto>/', getCaracteristicasByProducto),
     path('caracteristicas/add_to_producto/', addCaracteristicaToProducto),
     path('caracteristicas/remove_from_producto/', removeCaracteristicaFromProducto),
+    # Carrito URLs
+    path('carrito/', getCarritoByUserId),
+    path('carrito/add/', addItemToCarrito),
+    path('carrito/update/', updateCarritoItem),
+    path('carrito/remove/', removeItemFromCarrito),
+    path('carrito/clear/', clearCarrito),
 ]

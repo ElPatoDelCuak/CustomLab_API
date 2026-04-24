@@ -1,0 +1,134 @@
+===========================================================
+DOCUMENTACION API CARRITO - CUSTOMLAB
+===========================================================
+
+SISTEMA DE AUTENTICACION
+------------------------
+Todos los endpoints requieren un token JWT.
+Header: Authorization: Bearer <JWT_TOKEN>
+El backend identifica al usuario automaticamente mediante el token. 
+NO es necesario enviar id_usuario en los cuerpos de las peticiones.
+
+BASE URL (Ejemplo local): http://localhost:8000/api/carrito/
+
+-----------------------------------------------------------
+1. OBTENER CARRITO (GET)
+-----------------------------------------------------------
+Endpoint: /api/carrito/
+Metodo: GET
+Auth: Requerida (Bearer Token)
+
+RESPUESTA EXITOSA (200 OK):
+{
+  "success": true,
+  "data": [
+    {
+      "id_usuario": 1,
+      "id_producto": 10,
+      "id_talla": 2,
+      "cantidad": 2,
+      "precio_total": 50.00,
+      "producto": {
+        "nombre_producto": "Sudadera Anime",
+        "precio_unitario": 25.00,
+        "imagen": "http://localhost:8000/media/images/products/2/2_camiseta_oversize.png",
+        "categoria": "Sudaderas"
+      },
+      "talla": { "nombre": "M" }
+    }
+  ]
+}
+
+NOTA: Si el carrito esta vacio, "data" sera un array vacio [].
+
+-----------------------------------------------------------
+2. AÑADIR PRODUCTO (POST)
+-----------------------------------------------------------
+Endpoint: /api/carrito/add/
+Metodo: POST
+Auth: Requerida (Bearer Token)
+
+BODY (JSON):
+{
+  "id_producto": 10,
+  "id_talla": 2,
+  "cantidad": 1
+}
+
+RESPUESTA EXITOSA (201 Created):
+{
+  "success": true,
+  "message": "Producto agregado al carrito exitosamente"
+}
+
+ERRORES POSIBLES (400 Bad Request):
+- "Faltan parametros requeridos..."
+- "Cantidad solicitada supera el stock disponible..."
+- "La talla seleccionada no pertenece a este producto"
+
+-----------------------------------------------------------
+3. ACTUALIZAR CANTIDAD (PUT)
+-----------------------------------------------------------
+Endpoint: /api/carrito/update/
+Metodo: PUT
+Auth: Requerida (Bearer Token)
+
+BODY (JSON):
+{
+  "id_producto": 10,
+  "id_talla": 2,
+  "cantidad": 5
+}
+
+RESPUESTA EXITOSA (200 OK):
+{
+  "success": true,
+  "message": "Carrito actualizado exitosamente"
+}
+
+NOTAS:
+- Si cantidad es 0, el producto se elimina automaticamente.
+- Si la nueva cantidad supera el stock, devolvera error 400.
+
+-----------------------------------------------------------
+4. ELIMINAR ITEM (DELETE)
+-----------------------------------------------------------
+Endpoint: /api/carrito/remove/
+Metodo: DELETE
+Auth: Requerida (Bearer Token)
+
+BODY (JSON):
+{
+  "id_producto": 10,
+  "id_talla": 2
+}
+
+RESPUESTA EXITOSA (200 OK):
+{
+  "success": true,
+  "message": "Producto eliminado del carrito exitosamente"
+}
+
+-----------------------------------------------------------
+5. VACIAR CARRITO (DELETE)
+-----------------------------------------------------------
+Endpoint: /api/carrito/clear/
+Metodo: DELETE
+Auth: Requerida (Bearer Token)
+
+RESPUESTA EXITOSA (200 OK):
+{
+  "success": true,
+  "message": "Carrito vaciado exitosamente"
+}
+
+===========================================================
+ESTADOS HTTP GLOBALES
+===========================================================
+200 OK: Operacion exitosa.
+201 Created: Item creado/añadido con exito.
+400 Bad Request: Error de logica (stock, parametros, etc). Leer "message".
+401 Unauthorized: Token invalido o ausente. Redirigir a Login.
+404 Not Found: El recurso solicitado no existe.
+500 Internal Server Error: Error critico del servidor.
+===========================================================

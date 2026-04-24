@@ -101,12 +101,16 @@ class Caracteristicas(models.Model):
 class Carrito(models.Model):
     id_usuario = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_usuario')
     id_producto = models.ForeignKey('Productos', models.DO_NOTHING, db_column='id_producto')
+    id_talla = models.ForeignKey('Tallas', models.DO_NOTHING, db_column='id_talla')
     cantidad = models.IntegerField()
     precio_total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    pk = models.CompositePrimaryKey('id_usuario', 'id_producto', 'id_talla')
 
     class Meta:
         managed = False
         db_table = 'carrito'
+        ordering = ['id_usuario', 'id_producto', 'id_talla']
 
 
 class DjangoAdminLog(models.Model):
