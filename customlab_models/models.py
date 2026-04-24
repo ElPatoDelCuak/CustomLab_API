@@ -101,16 +101,12 @@ class Caracteristicas(models.Model):
 class Carrito(models.Model):
     id_usuario = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_usuario')
     id_producto = models.ForeignKey('Productos', models.DO_NOTHING, db_column='id_producto')
-    id_talla = models.ForeignKey('Tallas', models.DO_NOTHING, db_column='id_talla')
     cantidad = models.IntegerField()
     precio_total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    pk = models.CompositePrimaryKey('id_usuario', 'id_producto', 'id_talla')
 
     class Meta:
         managed = False
         db_table = 'carrito'
-        ordering = ['id_usuario', 'id_producto', 'id_talla']
 
 
 class DjangoAdminLog(models.Model):
@@ -270,6 +266,7 @@ class Usuarios(models.Model):
     email = models.CharField(unique=True, max_length=150)
     fecha_nacimiento = models.DateField(blank=True, null=True)
     doble_factor = models.BooleanField(blank=True, null=True)
+    secret_2fa = models.CharField(max_length=32, blank=True, null=True)  # Campo para el secret de 2FA
     rol = models.CharField(max_length=50)
 
     class Meta:
