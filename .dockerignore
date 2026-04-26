@@ -1,0 +1,10 @@
+.git
+.github
+__pycache__
+*.pyc
+venv/
+.env
+certbot/
+nginx/
+staticfiles/
+media/
