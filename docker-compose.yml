@@ -2,9 +2,9 @@ services:
   web:
     build: .
     container_name: customlab_api
-    command: python manage.py runserver 0.0.0.0:8000
-    ports:
-      - "8000:8000"
+    command: gunicorn customlab_api.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    expose:
+      - "8000"
     volumes:
       - .:/app
     env_file:
@@ -14,6 +14,36 @@ services:
     networks:
       - customlab_network
     restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: customlab_nginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
+    networks:
+      - customlab_network
+    depends_on:
+      - web
+
+  certbot:
+    image: certbot/certbot
+    container_name: customlab_certbot
+    env_file:
+      - .env
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/duckdns-auth.sh:/usr/local/bin/duckdns-auth.sh
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - customlab_network
 
 networks:
   customlab_network:

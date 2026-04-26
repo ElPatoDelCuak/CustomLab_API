@@ -1,0 +1,17 @@
+# Este archivo sobreescribe la configuración para desarrollo local
+# Se usa automáticamente al ejecutar 'docker compose up' sin parámetros
+services:
+  web:
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000" # Recuperamos el acceso directo en local
+
+  nginx:
+    # Deshabilitamos Nginx en local para evitar errores por falta de certificados SSL
+    entrypoint: ["echo", "Nginx deshabilitado en entorno de desarrollo"]
+    restart: "no"
+
+  certbot:
+    # Deshabilitamos Certbot en local
+    entrypoint: ["echo", "Certbot deshabilitado en entorno de desarrollo"]
+    restart: "no"
