@@ -156,7 +156,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
+# Esto hace que Django confíe en la cabecera X-Forwarded-Proto
+USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
+
 
 # Seguridad SSL/HTTPS (Detrás de Nginx)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
