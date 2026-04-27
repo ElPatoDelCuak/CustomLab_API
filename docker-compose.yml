@@ -31,6 +31,7 @@ services:
       - customlab_network
     depends_on:
       - web
+    restart: unless-stopped
 
   certbot:
     image: certbot/certbot
@@ -44,6 +45,7 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
       - customlab_network
+    restart: unless-stopped
 
 networks:
   customlab_network:
