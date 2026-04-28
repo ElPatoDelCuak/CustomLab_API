@@ -72,29 +72,23 @@ class UsuarioService:
     @staticmethod
     def updateUsuario(idUsuario, data):
         payload = dict(data)
-        payload['email'] = UsuarioService.normalize_email(payload.get('email'))
-
-        if not payload.get('email'):
-            return {
-                'success': False,
-                'message': 'El email es obligatorio'
-            }
         
-        email_duplicated = UsuarioRepository.getUsuarioByEmail(payload['email'])
-        if email_duplicated and email_duplicated['id_usuario'] != idUsuario:
-            return {
-                'success': False,
-                'message': 'El email ya esta registrado'
-            }
-
-        try:
-            payload['password'] = UsuarioService.validate_and_hash_password(payload.get('password'))
-        except ValidationError as exc:
-            return {
-                'success': False,
-                'message': '; '.join(exc.messages)
-            }
-
+        # El email es opcional en la actualización, pero si viene lo normalizamos
+        if 'email' in payload:
+            payload['email'] = UsuarioService.normalize_email(payload.get('email'))
+            if not payload['email']:
+                return {
+                    'success': False,
+                    'message': 'El email no puede estar vacío'
+                }
+            
+            # Verificar si el nuevo email ya está en uso por otro usuario
+            email_duplicated = UsuarioRepository.getUsuarioByEmail(payload['email'])
+            if email_duplicated and email_duplicated['id_usuario'] != idUsuario:
+                return {
+                    'success': False,
+                    'message': 'El email ya esta registrado'
+                }
         success = UsuarioRepository.updateUsuario(idUsuario, payload)
         if success:
             return {
@@ -103,8 +97,27 @@ class UsuarioService:
             }
         return {
             'success': False,
-            'message': 'Error al actualizar el usuario'
+            'message': 'Error al actualizar el usuario o no hubo cambios'
         }
+    
+    @staticmethod
+    def updatePassword(idUsuario, old_password, new_password):
+        stored_password = UsuarioRepository.getUsuarioPasswordById(idUsuario)
+        if not stored_password:
+            return {'success': False, 'message': 'Usuario no encontrado'}
+        
+        if not check_password(str(old_password), stored_password):
+            return {'success': False, 'message': 'La contraseña antigua es incorrecta'}
+        
+        try:
+            hashed_password = UsuarioService.validate_and_hash_password(new_password)
+        except ValidationError as exc:
+            return {'success': False, 'message': '; '.join(exc.messages)}
+            
+        success = UsuarioRepository.updatePassword(idUsuario, hashed_password)
+        if success:
+            return {'success': True, 'message': 'Contraseña actualizada exitosamente'}
+        return {'success': False, 'message': 'Error al actualizar la contraseña'}
     
     @staticmethod
     def deleteUsuario(idUsuario):

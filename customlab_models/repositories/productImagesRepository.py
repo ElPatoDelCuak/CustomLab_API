@@ -34,3 +34,23 @@ class ProductImagesRepository:
             return True
         except Exception:
             return False
+
+    @staticmethod
+    def getProductImageById(id_imagen):
+        try:
+            img = ImagenesProductos.objects.get(id_imagen_producto=id_imagen)
+            return {
+                'id_imagen_producto': img.id_imagen_producto,
+                'id_producto': img.id_producto_id,
+                'ruta': img.ruta
+            }
+        except Exception:
+            return None
+
+    @staticmethod
+    def deleteProductImageById(id_imagen):
+        try:
+            ImagenesProductos.objects.filter(id_imagen_producto=id_imagen).delete()
+            return True
+        except Exception:
+            return False

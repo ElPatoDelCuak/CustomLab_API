@@ -99,7 +99,7 @@ class Caracteristicas(models.Model):
 
 
 class Carrito(models.Model):
-    id_usuario = models.ForeignKey('Usuarios', models.DO_NOTHING, db_column='id_usuario')
+    id_usuario = models.ForeignKey('Usuarios', models.CASCADE, db_column='id_usuario')
     id_producto = models.ForeignKey('Productos', models.DO_NOTHING, db_column='id_producto')
     id_talla = models.ForeignKey('Tallas', models.DO_NOTHING, db_column='id_talla')
     cantidad = models.IntegerField()

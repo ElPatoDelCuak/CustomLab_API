@@ -90,3 +90,28 @@ class ProductImagesService:
             'success': True,
             'message': 'Imágenes del producto eliminadas exitosamente'
         }
+
+    @staticmethod
+    def deleteProductImageById(id_imagen):
+        image = ProductImagesRepository.getProductImageById(id_imagen)
+        if not image:
+            return {
+                'success': False,
+                'message': 'Imagen no encontrada'
+            }
+        
+        # 1. Borrar archivo físico
+        ImagesService.deleteImage(image['ruta'])
+        
+        # 2. Borrar de la base de datos
+        success = ProductImagesRepository.deleteProductImageById(id_imagen)
+        
+        if success:
+            return {
+                'success': True,
+                'message': 'Imagen eliminada exitosamente'
+            }
+        return {
+            'success': False,
+            'message': 'Error al eliminar la imagen de la base de datos'
+        }
