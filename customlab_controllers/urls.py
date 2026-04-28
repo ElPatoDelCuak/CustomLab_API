@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 
 from .controllers.productoController import getFeaturedProducts, getProductos, getProductoById, createProducto, updateProducto, deleteProducto
-from .controllers.usuarioController import getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario, loginUsuario
+from .controllers.usuarioController import getUsuarios, getUsuarioById, getMyUsuario, createUsuario, updateUsuario, updatePassword, deleteUsuario, loginUsuario
 from .controllers.incidenciaController import getIncidencias, getIncidenciaById, createIncidencia, updateEstadoIncidencia, deleteIncidencia
 from .controllers.productoPersonalizadoController import getProductosPersonalizados, getProductoPersonalizadoById, createProductoPersonalizado, updateProductoPersonalizado, deleteProductoPersonalizado
 from .controllers.pedidoController import getPedidos, getPedidoById, createPedido, updatePedido, deletePedido
@@ -24,11 +24,13 @@ urlpatterns = [
     #Usuario URLs
     path('usuarios/', getUsuarios),
     path('usuario/<int:id>/', getUsuarioById),
+    path('usuario/my/', getMyUsuario),
     path('usuarios/create/', createUsuario),
     path('login/', loginUsuario),
     path('login/refresh/', TokenRefreshView.as_view()),
     path('login/verify/', TokenVerifyView.as_view()),
     path('usuarios/update/<int:id>/', updateUsuario),
+    path('usuarios/update-password/<int:id>/', updatePassword),
     path('usuarios/delete/<int:id>/', deleteUsuario),
     # Pedido URLs
     path('pedidos/', getPedidos),
