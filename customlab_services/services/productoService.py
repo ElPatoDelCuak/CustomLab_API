@@ -190,23 +190,73 @@ class ProductoService:
         }
     
     @staticmethod
-    def updateProducto(idProducto, data):
-        exist = ProductoRepository.getProductoById(idProducto)
-        if not exist:
-            return {
-                'success': False,
-                'message': 'Producto no encontrado'
-            }
-        success = ProductoRepository.updateProducto(idProducto, data)
-        if success:
+    def updateProducto(idProducto, json_data, new_images=None):
+        try:
+            # Si json_data es un string, lo parseamos
+            data = json.loads(json_data) if isinstance(json_data, str) else json_data
+            
+            # 1. Actualizar datos base del Producto
+            producto_data = data.get('producto', {})
+            if producto_data:
+                ProductoRepository.updateProducto(idProducto, producto_data)
+
+            # 2. Gestionar Tallas
+            tallas_data = data.get('tallas', {})
+            if tallas_data:
+                # Borrar tallas
+                for id_talla in tallas_data.get('tallas_to_delete', []):
+                    TallaRepository.deleteTalla(id_talla)
+                
+                # Crear nuevas tallas
+                for talla_new in tallas_data.get('tallas_to_upload', []):
+                    talla_new['id_producto'] = idProducto
+                    TallaService.createTalla(talla_new)
+                
+                # Modificar tallas existentes
+                for talla_mod in tallas_data.get('tallas_to_modify', []):
+                    id_talla = talla_mod.get('id_talla')
+                    if id_talla:
+                        talla_mod['id_producto'] = idProducto
+                        TallaRepository.updateTalla(id_talla, talla_mod)
+
+            # 3. Gestionar Características
+            carac_data = data.get('caracteristicas', {})
+            if carac_data:
+                # Eliminar asociaciones
+                for id_carac in carac_data.get('caracteristicas_to_delete', []):
+                    CaracteristicaRepository.removeCaracteristicaFromProducto(idProducto, id_carac)
+                
+                # Añadir nuevas asociaciones
+                for id_carac in carac_data.get('caracteristicas_to_upload', []):
+                    CaracteristicaRepository.addCaracteristicaToProducto(idProducto, id_carac)
+
+            # 4. Gestionar Imágenes
+            img_data = data.get('imagenes', {})
+            if img_data:
+                # Borrar imágenes específicas
+                for id_img in img_data.get('imagenes_to_delete', []):
+                    from customlab_services.services.productImagesService import ProductImagesService
+                    ProductImagesService.deleteProductImageById(id_img)
+
+            # Subir nuevas imágenes si existen
+            if new_images:
+                upload_type = 3
+                for img in new_images:
+                    if ImagesService.verifyImage(img):
+                        path = ImagesService.saveImage(idProducto, upload_type, img)
+                        if path:
+                            ProductImagesRepository.saveProductImages(idProducto, path)
+
             return {
                 'success': True,
-                'message': 'Producto actualizado exitosamente'
+                'message': 'Producto actualizado de forma integral'
             }
-        return {
-            'success': False,
-            'message': 'Error al actualizar el producto'
-        }
+
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Error en la actualización integral: {str(e)}'
+            }
     
     @staticmethod
     def deleteProducto(idProducto):
@@ -238,12 +288,3 @@ class ProductoService:
             'success': False,
             'message': 'Error al eliminar el producto'
         }
-    @staticmethod
-    def verifyProducto(data):
-        pass
-    @staticmethod
-    def verifyUpdateProducto(data):
-        pass
-    @staticmethod
-    def verificarStockProducto(idProducto, cantidad):
-        pass

@@ -50,11 +50,21 @@ def createProducto(request):
     else:
         return Response(result, status=400)
 
-@api_view(['PUT'])
+@api_view(['PATCH'])
 @permission_classes([IsAdminOrManager])
 def updateProducto(request, id):
-    data = request.data
-    result = ProductoService.updateProducto(id, data)
+    # El JSON estructurado vendrá en el campo 'data' del FormData
+    json_data = request.data.get('data')
+    # Las imágenes nuevas vendrán en el campo 'new_images'
+    new_images = request.FILES.getlist('new_images') or request.FILES.getlist('new_images[]')
+    
+    if not json_data:
+        return Response({
+            'success': False,
+            'message': 'Se requiere el campo "data" con la configuración JSON'
+        }, status=400)
+
+    result = ProductoService.updateProducto(id, json_data, new_images)
     if result['success']:
         return Response(result, status=200)
     else:
