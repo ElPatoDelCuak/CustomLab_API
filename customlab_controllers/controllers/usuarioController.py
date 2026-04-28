@@ -35,7 +35,7 @@ def getUsuarioById(request, id):
         return Response(usuario, status=404)
 
 @api_view(['GET'])
-@permission_classes([IsCliente])
+@permission_classes([IsAuthenticated])
 def getMyUsuario(request):
     id = request.user.id_usuario
     usuario = UsuarioService.getUsuarioById(id)
