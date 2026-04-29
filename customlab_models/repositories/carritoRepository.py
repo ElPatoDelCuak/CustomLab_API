@@ -9,7 +9,7 @@ class CarritoRepository:
             'id_usuario', 'id_producto', 'id_talla', 'cantidad', 'precio_total'
         ).order_by('id_producto')
         if not carrito.exists():
-            return False
+            return []
         return list(carrito)
 
     @staticmethod

@@ -12,7 +12,7 @@ class CarritoService:
             return user_exists
 
         carrito = CarritoRepository.getCarritoByUserId(id_usuario)
-        if carrito is False:
+        if not carrito:
             return {'success': True, 'data': []}
 
         carrito_enriquecido = []
@@ -33,6 +33,8 @@ class CarritoService:
                     'producto': {
                         'nombre_producto': producto_data['nombre_producto'],
                         'precio_unitario': float(producto_data['precio_venta']),
+                        'precio_original': float(producto_data['precio_original']) if producto_data['precio_original'] else None,
+                        'oferta': producto_data['oferta'],
                         'imagen': producto_data['images'][0]['ruta'] if producto_data['images'] else None,
                         'categoria': producto_data['categoria'],
                         'stock': producto_data['stock']

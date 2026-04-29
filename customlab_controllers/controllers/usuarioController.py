@@ -1,12 +1,13 @@
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from customlab_services.services.usuarioService import UsuarioService
 from django_ratelimit.decorators import ratelimit
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from customlab_api.permissions import IsAdmin, IsAdminOrManager,IsCliente
 
 @ratelimit(key='ip', rate='5/m', block=True)
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def loginUsuario(request):
     data = request.data
     result = UsuarioService.verifyUsuario(data)
@@ -17,7 +18,7 @@ def loginUsuario(request):
     return Response(result, status=401)
 
 @api_view(['GET'])
-@permission_classes([IsAdmin])
+@permission_classes([IsAdminOrManager])
 def getUsuarios(request):
     usuarios = UsuarioService.getUsuarios()
     if usuarios ['success']:
@@ -45,7 +46,7 @@ def getMyUsuario(request):
         return Response(usuario, status=404)
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAdminOrManager])
 def createUsuario(request):
     data = request.data
     result = UsuarioService.createUsuario(data)
@@ -55,9 +56,8 @@ def createUsuario(request):
         return Response(result, status=400)
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrManager])
 def updateUsuario(request, id):
-    # Solo el propio usuario o un admin pueden actualizar el perfil
     if request.user.id_usuario != id and request.user.rol != 'admin':
         return Response({
             'success': False,
@@ -65,12 +65,9 @@ def updateUsuario(request, id):
         }, status=403)
 
     data = request.data.copy()
-    
-    # Evitar que un usuario no admin cambie su rol
     if request.user.rol != 'admin' and 'rol' in data:
         data.pop('rol')
     
-    # La contraseña se gestiona en otro endpoint
     if 'password' in data:
         data.pop('password')
 
@@ -81,9 +78,8 @@ def updateUsuario(request, id):
         return Response(result, status=400)
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrManager])
 def updatePassword(request, id):
-    # Solo el propio usuario o un admin pueden actualizar la contraseña
     if request.user.id_usuario != id and request.user.rol != 'admin':
         return Response({
             'success': False,
@@ -107,9 +103,8 @@ def updatePassword(request, id):
         return Response(result, status=400)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrManager])
 def deleteUsuario(request, id):
-    # Solo el propio usuario o un admin pueden eliminar el perfil
     if request.user.id_usuario != id and request.user.rol != 'admin':
         return Response({
             'success': False,
