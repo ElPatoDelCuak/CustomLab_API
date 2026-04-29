@@ -1,17 +1,42 @@
 # Este archivo sobreescribe la configuración para desarrollo local
 # Se usa automáticamente al ejecutar 'docker compose up' sin parámetros
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: customlab_db_local
+    environment:
+      POSTGRES_DB: customlab_db
+      POSTGRES_USER: customlab_user
+      POSTGRES_PASSWORD: customlab_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data
+    networks:
+      - customlab_network
+
   web:
     command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - "8000:8000" # Recuperamos el acceso directo en local
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db
+    networks:
+      - customlab_network
 
   nginx:
-    # Deshabilitamos Nginx en local para evitar errores por falta de certificados SSL
     entrypoint: ["echo", "Nginx deshabilitado en entorno de desarrollo"]
     restart: "no"
 
   certbot:
-    # Deshabilitamos Certbot en local
     entrypoint: ["echo", "Certbot deshabilitado en entorno de desarrollo"]
     restart: "no"
+
+networks:
+  customlab_network:
+    external: true
+
+volumes:
+  postgres_data_local:

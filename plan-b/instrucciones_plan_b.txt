@@ -1,0 +1,25 @@
+=========================================
+      GUÍA RÁPIDA: PLAN B (LOCAL)
+=========================================
+
+Copia el archivo '.env' a la carpeta antes de empezar.
+
+COMANDOS A EJECUTAR:
+--------------------
+
+1. Cambiar a la rama de emergencia:
+   git checkout plan-b
+
+2. Crear la red (solo si falla el siguiente paso):
+   docker network create customlab_network
+
+3. Encender la base de datos:
+   docker compose up -d db
+
+4. Cargar los datos de producción:
+   cat plan-b/backup.sql | docker exec -i customlab_db_local psql -U customlab_user -d customlab_db
+
+5. Encender la API:
+   docker compose up -d
+
+¡LISTO! Ya puedes abrir http://localhost:8000
