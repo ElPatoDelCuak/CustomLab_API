@@ -46,7 +46,7 @@ def getMyUsuario(request):
         return Response(usuario, status=404)
 
 @api_view(['POST'])
-@permission_classes([IsAdminOrManager])
+@permission_classes([AllowAny])
 def createUsuario(request):
     data = request.data
     result = UsuarioService.createUsuario(data)
@@ -56,7 +56,7 @@ def createUsuario(request):
         return Response(result, status=400)
 
 @api_view(['PATCH'])
-@permission_classes([IsAdminOrManager])
+@permission_classes([IsAuthenticated])
 def updateUsuario(request, id):
     if request.user.id_usuario != id and request.user.rol != 'admin':
         return Response({
@@ -78,7 +78,7 @@ def updateUsuario(request, id):
         return Response(result, status=400)
 
 @api_view(['PATCH'])
-@permission_classes([IsAdminOrManager])
+@permission_classes([IsAuthenticated])
 def updatePassword(request, id):
     if request.user.id_usuario != id and request.user.rol != 'admin':
         return Response({
@@ -103,7 +103,7 @@ def updatePassword(request, id):
         return Response(result, status=400)
 
 @api_view(['DELETE'])
-@permission_classes([IsAdminOrManager])
+@permission_classes([IsAuthenticated])
 def deleteUsuario(request, id):
     if request.user.id_usuario != id and request.user.rol != 'admin':
         return Response({
