@@ -1,111 +1,124 @@
 # CustomLab API
 
-CustomLab API es la API REST de nuestra tienda online, encargada de gestionar toda la lógica de negocio del sistema.
+**CustomLab API** es el núcleo backend y la API REST para la plataforma de tienda online CustomLab. Este sistema gestiona toda la lógica de negocio, autenticación de usuarios, gestión de productos y procesamiento de datos.
 
-Está desarrollada con Python, Django y Django REST Framework, siguiendo una arquitectura por capas que separa responsabilidades y facilita el mantenimiento y la escalabilidad.
+Este documento proporciona las instrucciones necesarias para la instalación, configuración y puesta en marcha del sistema, diferenciando entre los entornos de desarrollo y producción.
 
 ---
 
-## Tecnologías
+## Tecnologías Utilizadas
 
-- Python 3.12
-- Django – Framework web
-- Django REST Framework – Creación de APIs REST
-- PostgreSQL – Base de datos relacional
-- Docker – Contenerización del entorno
+- **Backend:** Python 3.12 + Django 6.0 + Django REST Framework
+- **Base de Datos:** PostgreSQL
+- **Servidor Web & Proxy:** Nginx + Gunicorn
+- **Seguridad:** Certbot (SSL Let's Encrypt) + JWT para autenticación
+- **Despliegue:** Docker & Docker Compose
 
 ---
 
 ## Estructura del Proyecto
 
-El proyecto sigue una arquitectura de 3 capas (Controllers, Services y Repositories):
+El proyecto sigue una arquitectura modular dentro de Django:
 
-```
-customlab_api/          # Configuración principal de Django
-
-customlab_controllers/  # Controladores (vistas de la API)
-└── controllers/
-    ├── productoController.py
-    └── usuarioController.py
-
-customlab_services/     # Lógica de negocio
-└── services/
-    ├── productoService.py
-    └── usuarioService.py
-
-customlab_models/       # Acceso a datos (repositorios)
-└── repositories/
-    ├── productoRepository.py
-    └── usuarioRepository.py
-```
+- `customlab_api/`: Configuración principal del proyecto, settings y rutas base.
+- `customlab_models/`: Definición de los modelos de datos (tablas de la BD).
+- `customlab_controllers/`: Lógica de los endpoints y vistas de la API (Controllers).
+- `customlab_services/`: Lógica de negocio y servicios auxiliares.
+- `nginx/`: Configuración del servidor proxy inverso.
+- `certbot/`: Scripts y certificados para SSL (HTTPS).
+- `BBDD_backup/`: Directorio destinado a las copias de seguridad de la base de datos.
 
 ---
 
-## Instalación
+## Requisitos Previos
 
-1. Clonar el repositorio
+Para instalar y ejecutar este software, asegúrese de tener instalado en su sistema:
 
-git clone <repositorio>
+1. **Git** (para clonar el repositorio).
+2. **Docker** y **Docker Compose**.
+
+---
+
+## Puesta en Marcha (Docker)
+
+El proyecto está completamente contenerizado, lo que simplifica la gestión de dependencias y configuración.
+
+### 1. Pasos Comunes (Clonación y Configuración)
+Independientemente del modo, primero debe clonar el repositorio y configurar el entorno:
+
+```bash
+git clone <URL_DEL_REPOSITORIO>
 cd CustomLab_API
+docker network create customlab_network
+```
 
-2. Crear y activar el entorno virtual
+Cree un archivo `.env` en la raíz del proyecto con las siguientes variables:
 
-Windows:
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+```env
+# Configuración de Django
+DEBUG=1                   # 1 para desarrollo, 0 para producción
+SECRET_KEY=tu_secret_key  # Generar una clave segura
+ALLOWED_HOSTS=localhost,127.0.0.1
+CSRF_TRUSTED_ORIGINS=http://localhost:8000
 
-Linux:
-python3 -m venv venv
-source venv/bin/activate
+# Base de Datos (PostgreSQL)
+DB_NAME=customlab_db
+DB_USER=customlab_user
+DB_PASSWORD=customlab_password
+DB_HOST=db
+DB_PORT=5432
 
-3. Instalar dependencias
+# DuckDNS (Solo producción)
+DUCKDNS_TOKEN=tu_token
+DUCKDNS_DOMAIN=tu_dominio
+```
 
-pip install -r requirements.txt
+### 2. Entorno de Desarrollo
+Para trabajar en local, el proyecto utiliza el archivo `docker-compose.override.yml` automáticamente. Este modo:
+- Ejecuta el servidor de desarrollo de Django (`runserver`).
+- Deshabilita Nginx y Certbot para evitar problemas de certificados SSL en local.
+- Expone la API directamente en el puerto `8000`.
 
-4. Ejecutar migraciones
-
-python manage.py migrate
-
----
-
-## Ejecución
-
-Desarrollo local:
-python manage.py runserver
-
-Con Docker:
+Para iniciar en modo desarrollo:
+```bash
 docker compose up
+```
+La API estará disponible en `http://localhost:8000/`.
+
+### 3. Entorno de Producción
+Para desplegar el sistema completo en producción:
+- Utiliza **Gunicorn** como servidor de aplicaciones.
+- Levanta **Nginx** como proxy inverso (puertos 8080/8443).
+- Activa **Certbot** para la gestión de certificados SSL.
+
+Para iniciar en modo producción:
+```bash
+docker compose -f docker-compose.yml up -d
+```
 
 ---
 
-## Arquitectura
+## 🗄️ Gestión de Base de Datos
 
-El proyecto sigue un patrón de 3 capas:
+### Realizar un Backup
+Para exportar el contenido actual de la base de datos a un archivo SQL:
 
-- Controllers: reciben las peticiones HTTP y devuelven las respuestas
-- Services: contienen la lógica de negocio
-- Repositories: acceden directamente a la base de datos
+```bash
+docker exec -t customlab_db_local pg_dump -U customlab_user customlab_db > BBDD_backup/backup_$(date +%Y%m%d).sql
+```
 
----
+### Restaurar un Backup
+Para importar un archivo de respaldo en la base de datos:
 
-## Endpoints Principales
-
-Productos:
-- GET /api/productos/
-- GET /api/productos/{id}/
-- POST /api/productos/
-- PUT /api/productos/{id}/
-- DELETE /api/productos/{id}/
-
-Usuarios:
-- GET /api/usuarios/
-- GET /api/usuarios/{id}/
-- POST /api/usuarios/
-- PUT /api/usuarios/{id}/
-- DELETE /api/usuarios/{id}/
+```bash
+cat BBDD_backup/backup.sql | docker exec -i customlab_db_local psql -U customlab_user -d customlab_db
+```
+*Nota: Asegúrese de que el contenedor de la base de datos esté en ejecución antes de restaurar.*
 
 ---
 
-## Autores
+## 👥 Autores y Soporte
 
-David Juncosa & Moussa Boudhafri
+Para cualquier duda o soporte técnico relacionado con la instalación:
+- **David Juncosa**
+- **Moussa Boudhafri**
